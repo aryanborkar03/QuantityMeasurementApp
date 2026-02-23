@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.quantitymeasurement.Feet;
-
 public class FeetTest {
 
     @Test
@@ -44,5 +42,4 @@ public class FeetTest {
 
         assertTrue(f1.equals(f1));
     }
-    
 }
