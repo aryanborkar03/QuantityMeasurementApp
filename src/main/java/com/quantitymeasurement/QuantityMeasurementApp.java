@@ -5,7 +5,7 @@ public class QuantityMeasurementApp {
 	public static boolean demonstrateLengthEquality(Length l1, Length l2) {
 		return l1.equals(l2);
 	}
-
+	
 	public static boolean demonstrateLengthComparison(double value1, Length.LengthUnit unit1, double value2, Length.LengthUnit unit2) {
 		Length l1 = new Length(value1, unit1);
 		Length l2 = new Length(value2, unit2);
@@ -13,6 +13,7 @@ public class QuantityMeasurementApp {
 		System.out.println(l1 + " == " + l2 + " ? " + result);
 		return result;
 	}
+
 
 	public static Length demonstrateLengthConversion(double value, Length.LengthUnit fromUnit, Length.LengthUnit toUnit) { 
 		Length source = new Length(value, fromUnit); 
@@ -25,6 +26,12 @@ public class QuantityMeasurementApp {
 		Length converted = length.convertTo(toUnit); 
 		System.out.println(length + " -> " + converted); 
 		return converted; 
+	}
+	
+	public static Length demonstrateLengthAddition(Length length1, Length length2) {
+	    Length sum = length1.add(length2);
+	    System.out.println(length1 + " + " + length2 + " = " + sum);
+	    return sum;
 	}
 	
 	public static void main(String[] args) {
@@ -40,5 +47,35 @@ public class QuantityMeasurementApp {
 		demonstrateLengthConversion(30.48, Length.LengthUnit.CENTIMETERS, Length.LengthUnit.FEET); 
 		
 		demonstrateLengthConversion(new Length(-1.0, Length.LengthUnit.FEET), Length.LengthUnit.INCHES);
+
+		demonstrateLengthAddition(
+			new Length(1.0, Length.LengthUnit.FEET),
+			new Length(12.0, Length.LengthUnit.INCHES)
+		);
+		
+		demonstrateLengthAddition(
+			new Length(12.0, Length.LengthUnit.INCHES),
+			new Length(1.0, Length.LengthUnit.FEET)
+		);
+		
+		demonstrateLengthAddition(
+			new Length(1.0, Length.LengthUnit.YARDS),
+			new Length(3.0, Length.LengthUnit.FEET)
+		);
+		
+		demonstrateLengthAddition(
+			new Length(2.54, Length.LengthUnit.CENTIMETERS),
+			new Length(1.0, Length.LengthUnit.INCHES)
+		);
+		
+		demonstrateLengthAddition(
+			new Length(5.0, Length.LengthUnit.FEET),
+			new Length(0.0, Length.LengthUnit.INCHES)
+		);
+		
+		demonstrateLengthAddition(
+			new Length(5.0, Length.LengthUnit.FEET),
+			new Length(-2.0, Length.LengthUnit.FEET)
+		);
 	}
 }
