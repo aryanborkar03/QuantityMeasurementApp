@@ -10,9 +10,9 @@ public class Length {
 
 		FEET(12.0), 
 		INCHES(1.0), 
-		YARDS(36.0), 
-		CENTIMETERS(0.393701); 
-		
+		YARDS(36.0),
+		CENTIMETERS(0.393701);
+
 		private final double conversionFactor;
 
 		LengthUnit(double conversionFactor) {
@@ -81,7 +81,7 @@ public class Length {
 		convertedValue = Math.round(convertedValue * 1000000.0) / 1000000.0;
 		return new Length(convertedValue, targetUnit);
 	}
-
+	
 	public static double convert(double value, LengthUnit source, LengthUnit target) {
 	    if (source == null || target == null) {
 	        throw new IllegalArgumentException("Units cannot be null");
@@ -92,9 +92,8 @@ public class Length {
 
 	    double baseValue = value * source.getConversionFactor();
 	    double convertedValue = baseValue / target.getConversionFactor();
-	    return Math.round(convertedValue * 100.0) / 100.0;
+	    return Math.round(convertedValue * 1000000.0) / 1000000.0;
 	}
-
 
 	public Length add(Length thatLength) {
 	    if (thatLength == null) {
@@ -105,6 +104,25 @@ public class Length {
 	    return new Length(sumInTargetUnit, this.unit);
 	}
 	
+	public Length add(Length other, LengthUnit targetUnit) {
+	    if (other == null) {
+	        throw new IllegalArgumentException("Operand cannot be null");
+	    }
+	    if (targetUnit == null) {
+	        throw new IllegalArgumentException("Target unit cannot be null");
+	    }
+	    if(!Double.isFinite(this.value) || !Double.isFinite(other.value)) {
+	    	throw new IllegalArgumentException("Values must be a finite number");
+	    }
+ 	    return addAndConvert(other, targetUnit);
+	}
+
+	private Length addAndConvert(Length other, LengthUnit targetUnit) {
+	    double sumInBase = this.convertToBaseUnit() + other.convertToBaseUnit();
+	    double sumInTargetUnit = convertFromBaseToTargetUnit(sumInBase, targetUnit);
+	    return new Length(sumInTargetUnit, targetUnit);
+	}
+
 	private double convertFromBaseToTargetUnit(double lengthInInches, LengthUnit targetUnit) {
 	    if (targetUnit == null) {
 	        throw new IllegalArgumentException("Target unit cannot be null");
@@ -124,7 +142,7 @@ public class Length {
 
 		Length length5 = new Length(100.0, LengthUnit.CENTIMETERS);
 		Length length6 = new Length(39.3701, LengthUnit.INCHES);
-		System.out.println("Are lengths equal? " + length5.equals(length6)); 
+		System.out.println("Are lengths equal? " + length5.equals(length6));
 
 		System.out.println("Convert 3 Feet to Inches: " + length1.convertTo(LengthUnit.INCHES));
 		System.out.println("Convert 2 Yards to Inches: " + length3.convertTo(LengthUnit.INCHES));
@@ -142,5 +160,29 @@ public class Length {
 		System.out.println("Add 5 Feet + (-2 Feet) = " + new Length(5.0, LengthUnit.FEET).add(new Length(-2.0, LengthUnit.FEET)));
 		System.out.println("Add Large Values: " + new Length(1e6, LengthUnit.FEET).add(new Length(1e6, LengthUnit.FEET)));
 		System.out.println("Add Small Values: " + new Length(0.001, LengthUnit.FEET).add(new Length(0.002, LengthUnit.FEET)));
+		
+	    Length result = new Length(1.0, LengthUnit.FEET).add(new Length(12.0, LengthUnit.INCHES), LengthUnit.FEET);
+	    System.out.println("Add (1.0 FEET, 12.0 INCHES, FEET) = " + result);
+
+	    result = new Length(1.0, LengthUnit.FEET).add(new Length(12.0, LengthUnit.INCHES), LengthUnit.INCHES);
+	    System.out.println("Add (1.0 FEET, 12.0 INCHES, INCHES) = " + result);
+
+	    result = new Length(1.0, LengthUnit.FEET).add(new Length(12.0, LengthUnit.INCHES), LengthUnit.YARDS);
+	    System.out.println("Add (1.0 FEET, 12.0 INCHES, YARDS) = " + result);
+
+	    result = new Length(1.0, LengthUnit.YARDS).add(new Length(3.0, LengthUnit.FEET), LengthUnit.YARDS);
+	    System.out.println("Add (1.0 YARDS, 3.0 FEET, YARDS) = " + result);
+
+	    result = new Length(36.0, LengthUnit.INCHES).add(new Length(1.0, LengthUnit.YARDS), LengthUnit.FEET);
+	    System.out.println("Add (36.0 INCHES, 1.0 YARDS, FEET) = " + result);
+
+	    result = new Length(2.54, LengthUnit.CENTIMETERS).add(new Length(1.0, LengthUnit.INCHES), LengthUnit.CENTIMETERS);
+	    System.out.println("Add (2.54 CM, 1.0 INCH, CM) = " + result);
+
+	    result = new Length(5.0, LengthUnit.FEET).add(new Length(0.0, LengthUnit.INCHES), LengthUnit.YARDS);
+	    System.out.println("Add (5.0 FEET, 0.0 INCHES, YARDS) = " + result);
+
+	    result = new Length(5.0, LengthUnit.FEET).add(new Length(-2.0, LengthUnit.FEET), LengthUnit.INCHES);
+	    System.out.println("Add (5.0 FEET, -2.0 FEET, INCHES) = " + result);
 	}
 }
