@@ -20,14 +20,71 @@ public class QuantityMeasurementApp {
 		return sum;
 	}
 
-	public static <U extends IMeasurable> Quantity<U> demonstrateAddition(Quantity<U> q1, Quantity<U> q2,
-			U targetUnit) {
+	public static <U extends IMeasurable> Quantity<U> demonstrateAddition(Quantity<U> q1, Quantity<U> q2, U targetUnit) {
 		Quantity<U> sum = q1.add(q2, targetUnit);
 		System.out.println(q1 + " + " + q2 + " in " + targetUnit.getUnitName() + " = " + sum);
 		return sum;
 	}
+	
+	public static <U extends IMeasurable> Quantity<U> demonstrateSubtraction(Quantity<U> a, Quantity<U> b) {
+	    Quantity<U> result = a.subtract(b);
+	    System.out.println(a + " - " + b + " = " + result);
+	    return result;
+	}
 
+	public static <U extends IMeasurable> Quantity<U> demonstrateSubtraction(Quantity<U> a, Quantity<U> b, U targetUnit) {
+	    Quantity<U> result = a.subtract(b, targetUnit);
+	    System.out.println(a + " - " + b + " in " + targetUnit.getUnitName() + " = " + result);
+	    return result;
+	}
+
+	public static <U extends IMeasurable> double demonstrateDivision(Quantity<U> a, Quantity<U> b) {
+	    double result = a.divide(b);
+	    System.out.println(a + " / " + b + " = " + result);
+	    return result;
+	}
+
+	// Main method
 	public static void main(String[] args) {
+        System.out.println(new Quantity<>(1.0, LengthUnit.FEET).add(new Quantity<>(12.0, LengthUnit.INCHES)));
+        System.out.println(new Quantity<>(10.0, WeightUnit.KILOGRAM).add(new Quantity<>(5000.0, WeightUnit.GRAM), WeightUnit.GRAM));
+
+        System.out.println(new Quantity<>(10.0, LengthUnit.FEET).subtract(new Quantity<>(6.0, LengthUnit.INCHES)));
+        System.out.println(new Quantity<>(5.0, VolumeUnit.LITRE).subtract(new Quantity<>(2.0, VolumeUnit.LITRE), VolumeUnit.MILLILITRE));
+
+        System.out.println(new Quantity<>(10.0, LengthUnit.FEET).divide(new Quantity<>(2.0, LengthUnit.FEET)));
+        System.out.println(new Quantity<>(24.0, LengthUnit.INCHES).divide(new Quantity<>(2.0, LengthUnit.FEET)));
+
+        try {
+            new Quantity<>(10.0, LengthUnit.FEET).add(null);
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+
+        try {
+            new Quantity<>(10.0, LengthUnit.FEET).subtract(new Quantity<>(5.0, WeightUnit.KILOGRAM));
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+
+        try {
+            new Quantity<>(10.0, LengthUnit.FEET).divide(new Quantity<>(0.0, LengthUnit.FEET));
+        } catch (Exception e) {
+            System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
+		
+		demonstrateSubtraction(new Quantity<>(10.0, LengthUnit.FEET), new Quantity<>(6.0, LengthUnit.INCHES));
+		demonstrateSubtraction(new Quantity<>(10.0, WeightUnit.KILOGRAM), new Quantity<>(5000.0, WeightUnit.GRAM));
+		demonstrateSubtraction(new Quantity<>(5.0, VolumeUnit.LITRE), new Quantity<>(500.0, VolumeUnit.MILLILITRE));
+
+		demonstrateSubtraction(new Quantity<>(10.0, LengthUnit.FEET), new Quantity<>(6.0, LengthUnit.INCHES), LengthUnit.INCHES);
+
+		demonstrateDivision(new Quantity<>(10.0, LengthUnit.FEET), new Quantity<>(2.0, LengthUnit.FEET));
+		demonstrateDivision(new Quantity<>(12.0, LengthUnit.INCHES), new Quantity<>(1.0, LengthUnit.FEET));
+		demonstrateDivision(new Quantity<>(10.0, WeightUnit.KILOGRAM), new Quantity<>(5.0, WeightUnit.KILOGRAM));
+		demonstrateDivision(new Quantity<>(5.0, VolumeUnit.LITRE), new Quantity<>(10.0, VolumeUnit.LITRE));
+
+		
         demonstrateEquality(new Quantity<>(1.0, VolumeUnit.LITRE), new Quantity<>(1000.0, VolumeUnit.MILLILITRE));
         demonstrateEquality(new Quantity<>(3.78541, VolumeUnit.LITRE), new Quantity<>(1.0, VolumeUnit.GALLON));
         demonstrateConversion(new Quantity<>(1.0, VolumeUnit.LITRE), VolumeUnit.MILLILITRE);
