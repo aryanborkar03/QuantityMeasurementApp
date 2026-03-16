@@ -99,6 +99,8 @@ public class QuantityMeasurementExceptionTest {
             QuantityMeasurementException.class,
             () -> { throw new QuantityMeasurementException("wrapper", root); }
         );
+        
+        
         assertSame(root, caught.getCause());
     }
 
