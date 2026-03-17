@@ -1,87 +1,33 @@
-# Java / JVM
-
-*.class
-*.jar
-*.war
-*.ear
-*.jmod
-
-# Build tools
-
+HELP.md
 target/
-build/
-.gradle/
-.mvn/
-node_modules/
-module-info.java
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# IDE - Eclipse
-
-.metadata/
-.settings/
+### STS ###
+.apt_generated
 .classpath
+.factorypath
 .project
-bin/
+.settings
+.springBeans
+.sts4-cache
 
-# IDE - IntelliJ IDEA
-
-.idea/
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
-out/
+*.ipr
 
-# IDE - VS Code
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
+### VS Code ###
 .vscode/
-
-# Logs & temp files
-
-*.log
-*.tmp
-*.temp
-*.bak
-*.old
-*.swp
-
-# Large / generated data files
-
-*.txt
-*.dat
-*.jpg
-*.bin
-*.out
-*.dump
-*.xml
-*.json
-*.csv
-*.ser
-*.tsv
-*.xlsx
-*.xls
-*.pdf
-*.zip
-*.rar
-*.7z
-*.tar
-*.gz
-
-# OS generated files
-
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Test / coverage
-
-coverage/
-*.exec
-*.lcov
-
-# Secrets / configs
-
-*.env
-*.properties
-*.keystore
-*.jks
-*.pem
-*.crt
-*.key
