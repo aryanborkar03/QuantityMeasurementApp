@@ -1,5 +1,5 @@
 package com.quantitymeasurement.units;
-import com.quantitymeasurement.model.Quantity;
+import com.quantitymeasurement.entity.Quantity;
 import com.quantitymeasurement.units.TemperatureUnit;
 
 import org.junit.jupiter.api.Test;

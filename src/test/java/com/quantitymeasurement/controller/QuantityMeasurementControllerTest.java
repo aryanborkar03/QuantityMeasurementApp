@@ -1,5 +1,5 @@
 package com.quantitymeasurement.controller;
-import com.quantitymeasurement.dto.QuantityDTO;
+import com.quantitymeasurement.entity.QuantityDTO;
 import com.quantitymeasurement.repository.IQuantityMeasurementRepository;
 import com.quantitymeasurement.repository.QuantityMeasurementCacheRepository;
 import com.quantitymeasurement.service.IQuantityMeasurementService;

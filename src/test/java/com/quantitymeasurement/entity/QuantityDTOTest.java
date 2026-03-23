@@ -1,5 +1,7 @@
-package com.quantitymeasurement.dto;
+package com.quantitymeasurement.entity;
 import org.junit.jupiter.api.Test;
+
+import com.quantitymeasurement.entity.QuantityDTO;
 
 import static org.junit.jupiter.api.Assertions.*;
 

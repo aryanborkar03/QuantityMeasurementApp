@@ -1,6 +1,5 @@
 package com.quantitymeasurement.entity;
 import com.quantitymeasurement.units.IMeasurable;
-import com.quantitymeasurement.model.QuantityModel;
 import com.quantitymeasurement.units.LengthUnit;
 
 import org.junit.jupiter.api.BeforeEach;
