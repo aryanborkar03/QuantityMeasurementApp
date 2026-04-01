@@ -70,6 +70,14 @@
   - Prevents unsupported arithmetic operations (addition, subtraction, division) through explicit validation and meaningful exceptions.
   - Demonstrates Interface Segregation and capability-based design while preserving backward compatibility for length, weight, and volume.
 
+- 🧩 **UC15 – N-Tier Architecture Refactoring :**
+  - Refactors the Quantity Measurement Application from a monolithic design into a structured **N-Tier architecture**.
+  - Introduces layered separation including **Controller, Service, Repository, Model, Entity, DTO, Interfaces, and Units** packages.
+  - Moves business logic into the **Service layer**, while the **Controller layer** manages application interaction and orchestration.
+  - Adds a **Repository layer with a cache-based storage implementation** to record measurement operations.
+  - Standardizes data flow using **QuantityDTO for external transfer**, **QuantityModel for internal processing**, and **QuantityMeasurementEntity for persistence**.
+  - Improves **modularity, testability, maintainability, and extensibility**, preparing the system for future integration with **REST APIs or database storage**.
+
 ### 🧰 Tech Stack
 
 - **Java 17+** — core language and application development  
