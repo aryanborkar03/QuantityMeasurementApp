@@ -8,7 +8,6 @@ import com.app.quantitymeasurement.security.jwt.JwtAuthenticationFilter;
 import com.app.quantitymeasurement.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.app.quantitymeasurement.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,40 +24,41 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
-/**
- * SecurityConfig
- *
- * Central Spring Security configuration for UC-18: Google Authentication and
- * User Management for Quantity Measurement.
- */
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final  CustomOAuth2UserService customOAuth2UserService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+			CustomOAuth2UserService customOAuth2UserService, JwtAuthenticationFilter jwtAuthenticationFilter,
+			JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler,
+			OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
+			OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
+			CorsConfigurationSource corsConfigurationSource) {
+		super();
+		this.customUserDetailsService = customUserDetailsService;
+		this.customOAuth2UserService = customOAuth2UserService;
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+		this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+		this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+		this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+		this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
+		this.corsConfigurationSource = corsConfigurationSource;
+	}
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    @Autowired
-    private JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-
-    @Autowired
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-
-    /**
+	/**
      * BCrypt password encoder. Used for hashing at registration and
      * verifying at login. Default cost factor = 10 (1024 rounds).
      *
@@ -100,7 +100,16 @@ public class SecurityConfig {
 
     /**
      * Defines the main HTTP security filter chain.
- 	 *
+     *
+     * <p>Filter processing order (relevant items):</p>
+     * <ol>
+     *   <li>JwtAuthenticationFilter — validates Bearer token, sets SecurityContext.</li>
+     *   <li>Authorization filter — enforces URL access rules declared below.</li>
+     * </ol>
+     *
+     * <p>Rules are evaluated top-to-bottom; the first matching rule wins.
+     * More specific patterns must come before broader catch-all patterns.</p>
+     *
      * @param http the HttpSecurity builder
      * @return the fully configured SecurityFilterChain
      * @throws Exception if configuration fails
@@ -109,6 +118,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            /*
+             * CORS — must be enabled in Spring Security so that the CORS filter runs
+             * before authentication checks. Preflight OPTIONS requests would otherwise
+             * be rejected with 401 before the browser ever sends the real request.
+             * The actual CORS policy (allowed origins, methods, headers) is defined
+             * in CorsConfig#corsConfigurationSource().
+             */
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
             /*
              * CSRF disabled — stateless JWT APIs are not vulnerable to CSRF because
              * there is no session cookie for an attacker to exploit.
@@ -138,17 +156,14 @@ public class SecurityConfig {
              */
             .authorizeHttpRequests(auth -> auth
 
-                /* ---- PUBLIC: auth and OAuth2 ---- */
+                /* ---- PROTECTED: user profile (must come before the bulk permitAll) ---- */
         		.requestMatchers("/api/v1/auth/me").authenticated()
-                .requestMatchers("/oauth2/**").permitAll()
-                .requestMatchers("/login/oauth2/**").permitAll()
 
-                
-                /* ---- PROTECTED: auth and OAuth2 ---- */
+                /* ---- PUBLIC: auth, OAuth2, and public password endpoints ---- */
                 .requestMatchers(
                 		"/api/v1/auth/login",
                 		"/api/v1/auth/register",
-                		"/api/v1/auth/oauth2/**",
+                		"/api/v1/auth/forgotPassword/**",
                 		"/oauth2/**",
                 		"/login/oauth2/**"
                 		).permitAll()

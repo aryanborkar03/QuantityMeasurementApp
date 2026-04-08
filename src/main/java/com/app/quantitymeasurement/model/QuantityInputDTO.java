@@ -1,13 +1,16 @@
-package com.app.quantitymeasurement.dto.request;
+package com.app.quantitymeasurement.model;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import com.app.quantitymeasurement.dto.response.QuantityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * QuantityInputDTO
+ *
+ * Request body DTO that wraps the operands for a quantity measurement operation.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

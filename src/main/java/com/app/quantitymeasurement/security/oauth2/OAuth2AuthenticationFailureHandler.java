@@ -15,15 +15,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-/**
- * OAuth2AuthenticationFailureHandler
- *
- * Invoked by Spring Security when the Google OAuth2 login flow fails at any
- * stage — for example, if the user denies the consent screen, if Google returns
- * an error code, or if {@code CustomOAuth2UserService} throws an exception
- * (e.g., a provider-conflict error for an account already registered locally).
- *
- */
+
 @Slf4j
 @Component
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -32,11 +24,16 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
      * Frontend URL to redirect to on failure. The {@code ?error=} query parameter
      * is appended dynamically. Defaults to Swagger UI for local development.
      */
-    @Value("${app.oauth2.redirect-uri:http://localhost:8080/swagger-ui.html}")
+    @Value("${app.oauth2.redirect-uri:http://localhost:3000/oauth2/callback}")
     private String redirectUri;
 
     /**
      * Handles a failed OAuth2 authentication event.
+     *
+     * <p>The error message from the {@link AuthenticationException} is URL-encoded
+     * (UTF-8) and appended to the redirect URI so it can be safely included in a
+     * query parameter without breaking the URL structure.</p>
+     *
      * @param request   the current HTTP request
      * @param response  the current HTTP response
      * @param exception the exception that caused the authentication failure

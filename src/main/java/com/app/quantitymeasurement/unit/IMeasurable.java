@@ -1,13 +1,6 @@
 package com.app.quantitymeasurement.unit;
 
-/**
- * IMeasurable
- *
- * Core contract that every measurement unit in the Quantity Measurement system
- * must fulfil. Implemented by {@code LengthUnit}, {@code WeightUnit},
- * {@code VolumeUnit}, and {@code TemperatureUnit}.
- *
- */
+
 public interface IMeasurable {
 
     /**

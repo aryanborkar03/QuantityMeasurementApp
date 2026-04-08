@@ -16,12 +16,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * User
- *
- * JPA entity that represents an application user. A user can be authenticated
- * either through the local email/password flow or through Google OAuth2.
- */
 @Entity
 @Table(
     name = "app_user",

@@ -2,7 +2,6 @@ package com.app.quantitymeasurement.security.jwt;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,27 +18,43 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * JwtAuthenticationFilter
- *
- * A Spring Security {@link OncePerRequestFilter} that intercepts every inbound
- * HTTP request exactly once per request cycle, extracts a JWT from the
- * {@code Authorization} header, validates it, and — if valid — populates the
- * {@link org.springframework.security.core.context.SecurityContext} with an
- * authenticated {@link org.springframework.security.core.Authentication} object.
- */
+
 @Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    /*
+     * -------------------------------------------------------------------------
+     * Dependencies
+     * -------------------------------------------------------------------------
+     */
+
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
+    
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
+			CustomUserDetailsService customUserDetailsService) {
+		this.jwtTokenProvider = jwtTokenProvider;
+		this.customUserDetailsService = customUserDetailsService;
+	}
+
+	/*
+     * -------------------------------------------------------------------------
+     * Core filter logic
+     * -------------------------------------------------------------------------
+     */
 
     /**
      * Core filter method invoked once per HTTP request.
+     *
+     * <p>If a valid JWT is found, the {@link SecurityContextHolder} is populated
+     * with a {@link UsernamePasswordAuthenticationToken} before the request
+     * continues. If no JWT is present or the JWT is invalid, the context is left
+     * empty and the request proceeds unauthenticated (public endpoints will succeed;
+     * protected endpoints will be rejected by the access-control rules in
+     * {@code SecurityConfig}).</p>
+     *
      * @param request     the incoming HTTP request
      * @param response    the outgoing HTTP response
      * @param filterChain the remainder of the filter chain
@@ -120,6 +135,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
          */
         filterChain.doFilter(request, response);
     }
+
+    /*
+     * -------------------------------------------------------------------------
+     * Private helpers
+     * -------------------------------------------------------------------------
+     */
 
     /**
      * Extracts the JWT string from the {@code Authorization} request header.

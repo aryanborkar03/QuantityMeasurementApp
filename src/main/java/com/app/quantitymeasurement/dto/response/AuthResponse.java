@@ -1,24 +1,17 @@
 package com.app.quantitymeasurement.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * AuthResponse
- *
- * Data Transfer Object returned to the client after a successful authentication
- * event — either a local email/password login or a Google OAuth2 sign-in.
- *
- * The JWT {@code accessToken} contained in this response must be included by
- * the client in the {@code Authorization} header of all subsequent requests to
- * protected endpoints, using the {@code Bearer} scheme:
- */
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthResponse {
 
     /**

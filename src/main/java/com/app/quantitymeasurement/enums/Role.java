@@ -1,10 +1,6 @@
 package com.app.quantitymeasurement.enums;
 
-/**
- * Role
- *
- * Enumeration of the application-level security roles assigned to users.
- */
+
 public enum Role {
 
     /**

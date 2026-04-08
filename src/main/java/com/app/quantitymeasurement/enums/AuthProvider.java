@@ -1,11 +1,6 @@
 package com.app.quantitymeasurement.enums;
 
-/**
- * AuthProvider
- *
- * Identifies the authentication provider that was used to create or last
- * authenticate a user account.
- */
+
 public enum AuthProvider {
 
     /**

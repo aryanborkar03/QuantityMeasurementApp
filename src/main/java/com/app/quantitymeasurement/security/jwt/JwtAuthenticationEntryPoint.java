@@ -17,13 +17,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * JwtAuthenticationEntryPoint
- *
- * Implements Spring Security's {@link AuthenticationEntryPoint} to handle
- * requests that reach a protected endpoint without a valid JWT (or with no
- * JWT at all).
- */
+
 @Slf4j
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -35,6 +29,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
      * Called by Spring Security when an unauthenticated request reaches a
      * protected endpoint. Writes a {@code 401 Unauthorized} JSON response
      * directly to the HTTP response, bypassing the standard MVC dispatch.
+     *
+     * <p>Because this method writes directly to the response output stream,
+     * it must set the content type and character encoding before writing, and
+     * must not call {@code response.sendRedirect()} or forward the request.</p>
+     *
      * @param request       the request that triggered the authentication failure
      * @param response      the response to write the 401 body to
      * @param authException the exception that describes why authentication failed

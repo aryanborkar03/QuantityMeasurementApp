@@ -1,16 +1,6 @@
 package com.app.quantitymeasurement.exception;
 
-/**
- * QuantityMeasurementException
- *
- * Custom runtime exception for errors that occur during quantity measurement
- * operations such as comparison, conversion, or arithmetic.
- *
- * Extends {@link RuntimeException} so it propagates unchecked through the call
- * stack and can be handled centrally by {@code GlobalExceptionHandler}, which
- * maps it to a structured {@code 400 Bad Request} response.
- *
- */
+
 public class QuantityMeasurementException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

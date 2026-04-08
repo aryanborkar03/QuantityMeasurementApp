@@ -2,17 +2,7 @@ package com.app.quantitymeasurement.unit;
 
 import java.util.function.Function;
 
-/**
- * TemperatureUnit
- *
- * Enumeration of supported temperature measurement units.
- *
- * Implements {@link IMeasurable} but does not implement
- * {@link SupportsArithmetic}, so arithmetic operations (add, subtract) are
- * rejected by the service layer. Conversion between temperature units is
- * fully supported.
- *
- */
+
 public enum TemperatureUnit implements IMeasurable {
 
     CELSIUS(

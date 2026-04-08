@@ -12,20 +12,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * QuantityMeasurementController
- *
- * REST controller that exposes quantity measurement operations as HTTP endpoints.
- * All business logic is delegated to IQuantityMeasurementService, this
- * class is responsible only for request routing, input validation, and response
- * wrapping.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/quantities")
@@ -33,11 +25,13 @@ import java.util.List;
      description = "REST API for quantity measurement operations")
 public class QuantityMeasurementController {
 
+    private final IQuantityMeasurementService quantityMeasurementService;
+    
+    public QuantityMeasurementController(IQuantityMeasurementService quantityMeasurementService) {
+		this.quantityMeasurementService = quantityMeasurementService;
+	}
 
-    @Autowired
-    private IQuantityMeasurementService quantityMeasurementService;
-
-    // -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
     // POST — operation endpoints
     // -------------------------------------------------------------------------
 

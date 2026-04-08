@@ -21,43 +21,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * JwtTokenProvider
- *
- * Centralised service responsible for the full JWT lifecycle:
- * <ol>
- *   <li><b>Token generation</b> — signs a compact JWT using HMAC-SHA-256 (HS256).</li>
- *   <li><b>Claims extraction</b> — retrieves the subject (email) and role from a
- *       previously issued token.</li>
- *   <li><b>Token validation</b> — verifies the signature, checks the expiry time,
- *       and catches all JJWT-defined exception types gracefully.</li>
- * </ol>
- *
- * <p><b>Token structure (standard JWT claims):</b></p>
- * <ul>
- *   <li>{@code sub}    — the user's email address (principal name)</li>
- *   <li>{@code roles}  — comma-separated authority string (e.g., {@code "ROLE_USER"})</li>
- *   <li>{@code iat}    — issued-at timestamp (epoch milliseconds)</li>
- *   <li>{@code exp}    — expiry timestamp ({@code iat + expirationMs})</li>
- * </ul>
- *
- * <p><b>Key management:</b> the secret is read from {@code app.jwt.secret} in
- * {@code application.properties} as a Base64-encoded string. It must be at least
- * 32 bytes (256 bits) after decoding to satisfy the HS256 minimum key size.
- * Never commit the actual secret to version control; use environment variable
- * substitution ({@code ${JWT_SECRET}}) in production.</p>
- *
- * <p><b>Thread safety:</b> this component is a Spring singleton. The
- * {@link SecretKey} object is immutable and safe to share across threads.</p>
- *
- * @author Abhishek Puri Goswami
- * @version 18.0
- * @since 18.0
- */
+
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
+	private static final String ROLES = "roles";
 
     /*
      * -------------------------------------------------------------------------
@@ -103,7 +72,7 @@ public class JwtTokenProvider {
      */
     public String generateToken(Authentication authentication) {
         /*
-         * Retrieve the principal. For local logins this is a UserPrincipal;
+         * Retrieve the principal. For local logins this is a UserPrincipal
          * for OAuth2 logins the same type is returned by CustomOAuth2UserService.
          */
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -122,7 +91,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())   // JWT "sub" claim = email
-                .claim("roles", roles)                  // custom claim for role(s)
+                .claim(ROLES, roles)                  // custom claim for role(s)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSigningKey())               // HS256 via derived SecretKey
@@ -145,7 +114,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(email)
-                .claim("roles", role)
+                .claim(ROLES, role)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSigningKey())
@@ -179,7 +148,7 @@ public class JwtTokenProvider {
      * @return the roles string (e.g., {@code "ROLE_USER"})
      */
     public String getRolesFromToken(String token) {
-        return parseClaims(token).get("roles", String.class);
+        return parseClaims(token).get(ROLES, String.class);
     }
 
     /*

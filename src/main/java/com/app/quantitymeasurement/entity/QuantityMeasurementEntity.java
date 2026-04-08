@@ -1,5 +1,7 @@
 package com.app.quantitymeasurement.entity;
 
+import com.app.quantitymeasurement.model.QuantityModel;
+import com.app.quantitymeasurement.unit.IMeasurable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,15 +10,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.app.quantitymeasurement.model.QuantityModel;
 
-/**
- * QuantityMeasurementEntity
- *
- * JPA entity that records a single quantity measurement operation in the database.
- * Each row captures both operands, the operation performed, the result, and — when
- * the operation failed — an error message and flag.
- */
 @Entity
 @Table(name = "quantity_measurement")
 @Data
@@ -131,8 +125,8 @@ public class QuantityMeasurementEntity implements Serializable {
      * @param result       string result (e.g., {@code "true"}, {@code "false"})
      */
     public QuantityMeasurementEntity(
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thisQuantity,
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thatQuantity,
+            QuantityModel<IMeasurable> thisQuantity,
+            QuantityModel<IMeasurable> thatQuantity,
             String operation,
             String result) {
         this(thisQuantity, thatQuantity, operation);
@@ -148,10 +142,10 @@ public class QuantityMeasurementEntity implements Serializable {
      * @param result       result quantity carrying value, unit, and measurement type
      */
     public QuantityMeasurementEntity(
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thisQuantity,
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thatQuantity,
+            QuantityModel<IMeasurable> thisQuantity,
+            QuantityModel<IMeasurable> thatQuantity,
             String operation,
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> result) {
+            QuantityModel<IMeasurable> result) {
         this(thisQuantity, thatQuantity, operation);
         this.resultValue            = result.getValue();
         this.resultUnit             = result.getUnit().getUnitName();
@@ -168,8 +162,8 @@ public class QuantityMeasurementEntity implements Serializable {
      * @param isError      must be {@code true}; included for explicitness at call sites
      */
     public QuantityMeasurementEntity(
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thisQuantity,
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thatQuantity,
+            QuantityModel<IMeasurable> thisQuantity,
+            QuantityModel<IMeasurable> thatQuantity,
             String operation,
             String errorMessage,
             boolean isError) {
@@ -188,8 +182,8 @@ public class QuantityMeasurementEntity implements Serializable {
      * @throws IllegalArgumentException if either operand is {@code null}
      */
     public QuantityMeasurementEntity(
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thisQuantity,
-            QuantityModel<com.app.quantitymeasurement.unit.IMeasurable> thatQuantity,
+            QuantityModel<IMeasurable> thisQuantity,
+            QuantityModel<IMeasurable> thatQuantity,
             String operation) {
         if (thisQuantity == null || thatQuantity == null) {
             throw new IllegalArgumentException("Quantities cannot be null");

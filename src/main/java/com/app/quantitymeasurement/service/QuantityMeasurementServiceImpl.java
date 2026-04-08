@@ -16,34 +16,18 @@ import com.app.quantitymeasurement.model.QuantityModel;
 import com.app.quantitymeasurement.repository.QuantityMeasurementRepository;
 import com.app.quantitymeasurement.unit.IMeasurable;
 
-/**
- * QuantityMeasurementServiceImpl
- *
- * Service layer implementation for all quantity measurement business operations.
- * Registered as a Spring bean via {@code @Service}; the {@link QuantityMeasurementRepository}
- * is injected by Spring through {@code @Autowired} field injection.
- *
- * Transaction strategy: {@code @Transactional} is deliberately not
- * applied so that error records are written to the repository even when an operation
- * throws an exception. Each public method persists one entity on success and one
- * error entity on failure, providing a full audit trail regardless of outcome.
- *
- * Conversion strategy: incoming {@link QuantityDTO} objects are converted
- * to internal {@link QuantityModel} instances via {@link #convertDtoToModel}. Results
- * are mapped back to {@link QuantityMeasurementDTO} through
- * {@link QuantityMeasurementDTO#fromEntity}.
- *
- * Temperature arithmetic:temperature values cannot be meaningfully added
- * or subtracted (adding 20°C to 10°C does not produce 30°C in a physical sense), so
- * these operations are explicitly rejected with {@link UnsupportedOperationException}.
- */
+
 @Slf4j
 @Service
 public class QuantityMeasurementServiceImpl implements IQuantityMeasurementService {
 
+    private static final double EPSILON = 1e-6;
 
-    @Autowired
-    private QuantityMeasurementRepository repository;
+    private final QuantityMeasurementRepository repository;
+
+    public QuantityMeasurementServiceImpl(QuantityMeasurementRepository repository) {
+        this.repository = repository;
+    }
 
     // -------------------------------------------------------------------------
     // Internal enums
@@ -315,17 +299,17 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
 
     /**
      * Compares two quantity models by their base-unit values using
-     * {@link Double#compare} (exact equality, no tolerance).
+     * an epsilon tolerance of {@code 1e-6} to account for floating-point rounding.
      *
      * @param q1 first model
      * @param q2 second model
-     * @return {@code true} if the base values are exactly equal
+     * @return {@code true} if the base values are equal within tolerance
      */
     private <U extends IMeasurable> boolean compareBaseValues(
             QuantityModel<U> q1, QuantityModel<U> q2) {
-        return Double.compare(
-            q1.getUnit().convertToBaseUnit(q1.getValue()),
-            q2.getUnit().convertToBaseUnit(q2.getValue())) == 0;
+        double base1 = q1.getUnit().convertToBaseUnit(q1.getValue());
+        double base2 = q2.getUnit().convertToBaseUnit(q2.getValue());
+        return Math.abs(base1 - base2) < EPSILON;
     }
 
     /**
@@ -343,13 +327,13 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
     /**
      * Validates that the two operands are compatible for an arithmetic operation.
      *
-     * Checks performed:
-     * 
-     *   Neither operand is {@code null}.
-     *   Both operands belong to the same measurement category.
-     *   The category supports arithmetic (temperature is rejected).
-     *   When {@code targetRequired} is {@code true}, the target unit is not {@code null}.
-     * 
+     * <p>Checks performed:</p>
+     * <ol>
+     *   <li>Neither operand is {@code null}.</li>
+     *   <li>Both operands belong to the same measurement category.</li>
+     *   <li>The category supports arithmetic (temperature is rejected).</li>
+     *   <li>When {@code targetRequired} is {@code true}, the target unit is not {@code null}.</li>
+     * </ol>
      *
      * @param q1             first operand
      * @param q2             second operand
@@ -457,8 +441,8 @@ public class QuantityMeasurementServiceImpl implements IQuantityMeasurementServi
      * Called from every catch block so that failed operations always appear in the
      * audit history, regardless of whether the calling method re-throws the exception.
      *
-     * Save failures are logged but not re-thrown; the original operation exception
-     * must propagate to the caller undisturbed.
+     * <p>Save failures are logged but not re-thrown; the original operation exception
+     * must propagate to the caller undisturbed.</p>
      *
      * @param q1           first operand
      * @param q2           second operand

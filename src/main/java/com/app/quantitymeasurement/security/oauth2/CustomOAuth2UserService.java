@@ -21,24 +21,28 @@ import com.app.quantitymeasurement.security.UserPrincipal;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * CustomOAuth2UserService
- *
- * Extends Spring Security's {@link DefaultOAuth2UserService} to add
- * application-specific logic after an OAuth2 provider (Google or GitHub)
- * returns the authenticated user's profile attributes.
- */
+
 @Slf4j
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-	@Autowired
 	private UserRepository userRepository;
+	
+	public CustomOAuth2UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
 	/**
 	 * Called by Spring Security after it has exchanged the OAuth2 authorization
 	 * code for an access token and fetched the user's profile from the provider's
 	 * UserInfo endpoint.
+	 *
+	 * <p>
+	 * The {@code userRequest.getClientRegistration().getRegistrationId()} value is
+	 * {@code "google"} or {@code "github"}, which this service uses to apply
+	 * provider-specific attribute extraction logic.
+	 * </p>
+	 *
 	 * @param userRequest contains the registered client, the access token, and
 	 *                    additional request parameters
 	 * @return a {@link UserPrincipal} wrapping the persisted/updated user entity
@@ -103,6 +107,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	/**
 	 * Extracts a normalised {@link OAuthUserInfo} from the raw attribute map
 	 * according to the attribute keys each provider uses.
+	 *
+	 * <p>
+	 * <b>Google attribute keys:</b> {@code email}, {@code name}, {@code picture},
+	 * {@code sub}.
+	 * </p>
+	 *
+	 * <p>
+	 * <b>GitHub attribute keys:</b> {@code email} (may be null if private),
+	 * {@code name} (may be null — fallback to {@code login}), {@code avatar_url},
+	 * {@code id} (numeric, cast to String).
+	 * </p>
+	 *
 	 * @param registrationId {@code "google"} or {@code "github"}
 	 * @param attributes     raw attribute map from the provider's UserInfo endpoint
 	 * @return normalised user info container
@@ -147,6 +163,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	/**
 	 * Handles a returning OAuth2 user. Refreshes mutable profile fields (name and
 	 * image URL) and guards against cross-provider account takeover.
+	 *
+	 * <p>
+	 * Conflict rules:
+	 * </p>
+	 * <ul>
+	 * <li>LOCAL account → reject with a descriptive message.</li>
+	 * <li>Same provider → update and return.</li>
+	 * <li>Different OAuth2 provider (e.g. GOOGLE account logging in via GITHUB) →
+	 * reject so the user understands which provider to use.</li>
+	 * </ul>
 	 *
 	 * @param existing   the persisted user entity found by email
 	 * @param info       normalised provider attributes

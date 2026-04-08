@@ -4,25 +4,7 @@ import java.util.function.DoubleBinaryOperator;
 import com.app.quantitymeasurement.unit.IMeasurable;
 import com.app.quantitymeasurement.unit.SupportsArithmetic;
 
-/**
- * Quantity
- *
- * Immutable domain model that pairs a numeric value with a measurable unit and
- * exposes operations for equality comparison, unit conversion, addition, subtraction,
- * and division.
- *
- * All arithmetic operations convert both operands to their common base unit before
- * applying the calculation, ensuring correct results regardless of the input units.
- * Operations return a new {@code Quantity} instance — this class is immutable.
- *
- * Arithmetic is only allowed for units that implement {@link SupportsArithmetic}
- * (LengthUnit, WeightUnit, VolumeUnit). Attempting arithmetic on TemperatureUnit throws
- * {@link UnsupportedOperationException}.
- *
- * Two quantities are considered equal when their base-unit values differ by less than
- * {@code 1e-6}. Cross-category comparisons (e.g., length vs. weight) always return
- * {@code false}.
- */
+
 public final class Quantity<U extends IMeasurable> {
 
     private final double value;
@@ -41,7 +23,7 @@ public final class Quantity<U extends IMeasurable> {
     /**
      * Supported arithmetic operations, each backed by a {@link DoubleBinaryOperator}.
      */
-    enum ArithmeticOperation {
+    private enum ArithmeticOperation {
 
         ADD((a, b) -> a + b),
         SUBTRACT((a, b) -> a - b),
@@ -56,7 +38,7 @@ public final class Quantity<U extends IMeasurable> {
             this.operator = operator;
         }
 
-        public double compute(double a, double b) {   
+        double compute(double a, double b) {
             return operator.applyAsDouble(a, b);
         }
     }

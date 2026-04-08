@@ -1,15 +1,21 @@
-package com.app.quantitymeasurement.dto.request;
+package com.app.quantitymeasurement.model;
 
-import com.app.quantitymeasurement.entity.QuantityMeasurementEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.app.quantitymeasurement.entity.QuantityMeasurementEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * QuantityMeasurementDTO
+ *
+ * API response DTO that represents the outcome of a single quantity measurement
+ * operation. It mirrors the fields of {@link QuantityMeasurementEntity} but is
+ * designed for API communication rather than database persistence.
+ */
 @Data
 @Builder
 @NoArgsConstructor

@@ -1,37 +1,33 @@
 package com.app.quantitymeasurement.security;
 
-import com.app.quantitymeasurement.entity.User;
-import com.app.quantitymeasurement.repository.UserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * CustomUserDetailsService
- *
- * Spring Security {@link UserDetailsService} implementation that loads a user
- * record from the database by email address and wraps it in a
- * {@link UserPrincipal} for use by the authentication infrastructure.
- *
- */
+import com.app.quantitymeasurement.entity.User;
+import com.app.quantitymeasurement.repository.UserRepository;
+import com.app.quantitymeasurement.security.jwt.JwtAuthenticationFilter;
+
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    /**
+    public CustomUserDetailsService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	/**
      * Loads a user by their email address.
      *
-     * Spring Security calls this method with the value that was passed as the
+     * <p>Spring Security calls this method with the value that was passed as the
      * "username" field — in this application, that is always an email address.
      * The method wraps the found entity in a {@link UserPrincipal} which
      * implements both {@link UserDetails} and
-     * {@link org.springframework.security.oauth2.core.user.OAuth2User}.
+     * {@link org.springframework.security.oauth2.core.user.OAuth2User}.</p>
      *
      * @param email the email address to look up; must not be {@code null}
      * @return a fully populated {@link UserPrincipal} ready for authentication
@@ -60,9 +56,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     /**
      * Loads a user by their database primary key.
      *
-     * This overload is used internally (e.g., by service methods that have
+     * <p>This overload is used internally (e.g., by service methods that have
      * already resolved the user ID from a JWT claim or a related entity) to avoid
-     * a second email-based query when the ID is already known.
+     * a second email-based query when the ID is already known.</p>
      *
      * @param id the user's primary key
      * @return a fully populated {@link UserPrincipal}

@@ -17,13 +17,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * JwtAccessDeniedHandler
- *
- * Implements Spring Security's {@link AccessDeniedHandler} to handle requests
- * from authenticated users who lack sufficient authority (role) to access a
- * protected endpoint.
- */
+
 @Slf4j
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
@@ -35,8 +29,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
      * Called by Spring Security when an authenticated user attempts to access
      * a resource they are not authorised to use.
      *
-     * Writes a {@code 403 Forbidden} JSON response directly to the HTTP
-     * response output stream, bypassing MVC dispatch.
+     * <p>Writes a {@code 403 Forbidden} JSON response directly to the HTTP
+     * response output stream, bypassing MVC dispatch.</p>
      *
      * @param request               the request that triggered the access denial
      * @param response              the response to write the 403 body to

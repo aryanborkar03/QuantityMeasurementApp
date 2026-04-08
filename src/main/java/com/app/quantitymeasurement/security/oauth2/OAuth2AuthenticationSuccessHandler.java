@@ -3,7 +3,6 @@ package com.app.quantitymeasurement.security.oauth2;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,12 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * OAuth2AuthenticationSuccessHandler
- *
- * Invoked by Spring Security immediately after a successful Google OAuth2
- * login. Its sole responsibility is to:
- */
+
 @Slf4j
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
@@ -35,8 +29,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
      * -------------------------------------------------------------------------
      */
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final String redirectUri;
 
     /**
      * The frontend URL to redirect to after a successful OAuth2 login.
@@ -44,8 +38,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
      * Defaults to {@code http://localhost:8080/swagger-ui.html} for local
      * development (so Swagger can be tested without a separate frontend).
      */
-    @Value("${app.oauth2.redirect-uri:http://localhost:8080/swagger-ui.html}")
-    private String redirectUri;
+	
+	public OAuth2AuthenticationSuccessHandler(
+	        JwtTokenProvider jwtTokenProvider,
+	        @Value("${app.oauth2.redirect-uri:http://localhost:3000/oauth2/callback}")
+	        String redirectUri) {
+
+	    this.jwtTokenProvider = jwtTokenProvider;
+	    this.redirectUri = redirectUri;
+	}
+	
 
     /*
      * -------------------------------------------------------------------------
@@ -55,6 +57,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     /**
      * Processes a successful OAuth2 authentication event.
+     *
+     * <p>Steps performed:</p>
+     * <ol>
+     *   <li>Cast the principal to {@link UserPrincipal}.</li>
+     *   <li>Build a JWT from the user's email and role using the
+     *       {@code generateTokenFromEmail} overload (no Authentication object
+     *       is available at this point — Spring Security's internal flow passes
+     *       the principal directly).</li>
+     *   <li>Build the target redirect URL with the JWT as a query parameter.</li>
+     *   <li>Issue an HTTP 302 redirect response.</li>
+     * </ol>
+     *
      * @param request        the current HTTP request
      * @param response       the current HTTP response
      * @param authentication the fully authenticated OAuth2 principal

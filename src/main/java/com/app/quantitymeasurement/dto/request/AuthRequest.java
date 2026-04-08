@@ -6,15 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * AuthRequest
- *
- * Data Transfer Object for the local login request body.
- * Clients POST this payload to {@code /api/v1/auth/login} to obtain a
- * JWT access token. Both fields are validated before the service layer is
- * reached; constraint violations are handled by {@code GlobalExceptionHandler}
- * and result in a {@code 400 Bad Request} response.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +24,7 @@ public class AuthRequest {
     /**
      * The user's plain-text password. Must not be blank.
      * It is compared against the stored BCrypt hash by
-     * org.springframework.security.crypto.password.PasswordEncoder#matches.
+     * {@link org.springframework.security.crypto.password.PasswordEncoder#matches}.
      * This field is never stored or logged.
      */
     @NotBlank(message = "Password must not be blank")

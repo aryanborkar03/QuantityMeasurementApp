@@ -1,4 +1,4 @@
-package com.app.quantitymeasurement.dto.response;
+package com.app.quantitymeasurement.model;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,12 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * QuantityDTO
+ *
+ * Data Transfer Object that carries a single quantity — a numeric value paired with
+ * its measurement unit — between the API layer and the service layer.
+ */
 @Data
 @NoArgsConstructor
 public class QuantityDTO {
