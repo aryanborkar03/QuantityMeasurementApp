@@ -1,20 +1,11 @@
-
 package com.app.quantitymeasurement.unit;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * IMeasurableTest
- *
- * Verifies the IMeasurable interface contract across all unit implementations:
- * - getUnitName() and getMeasurementType() are correctly implemented
- * - convertToBaseUnit(1.0) matches the expected conversion factor
- * - convertToBaseUnit / convertFromBaseUnit are inverses
- * - SupportsArithmetic is implemented by Length, Weight, Volume but NOT Temperature
- */
-public class IMeasurableTest {
+
+class IMeasurableTest {
 
     private static final double EPSILON = 1e-6;
 
@@ -23,7 +14,7 @@ public class IMeasurableTest {
     // =========================================================================
 
     @Test
-    public void testIMeasurable_LengthUnit_Feet() {
+    void testIMeasurable_LengthUnit_Feet() {
         IMeasurable unit = LengthUnit.FEET;
         assertEquals("FEET",       unit.getUnitName());
         assertEquals("LengthUnit", unit.getMeasurementType());
@@ -32,7 +23,7 @@ public class IMeasurableTest {
     }
 
     @Test
-    public void testIMeasurable_LengthUnit_Inches() {
+    void testIMeasurable_LengthUnit_Inches() {
         IMeasurable unit = LengthUnit.INCHES;
         assertEquals("INCHES",     unit.getUnitName());
         assertEquals(1.0,          unit.convertToBaseUnit(1.0),  EPSILON);
@@ -40,7 +31,7 @@ public class IMeasurableTest {
     }
 
     @Test
-    public void testIMeasurable_ConsistentBehavior_LengthAndWeight() {
+    void testIMeasurable_ConsistentBehavior_LengthAndWeight() {
         IMeasurable length = LengthUnit.INCHES;
         IMeasurable weight = WeightUnit.GRAM;
         assertNotNull(length.getUnitName());
@@ -54,7 +45,7 @@ public class IMeasurableTest {
     // =========================================================================
 
     @Test
-    public void testIMeasurable_WeightUnit_Kilogram() {
+    void testIMeasurable_WeightUnit_Kilogram() {
         IMeasurable unit = WeightUnit.KILOGRAM;
         assertEquals("KILOGRAM",   unit.getUnitName());
         assertEquals("WeightUnit", unit.getMeasurementType());
@@ -67,7 +58,7 @@ public class IMeasurableTest {
     // =========================================================================
 
     @Test
-    public void testIMeasurable_VolumeUnit_Litre() {
+    void testIMeasurable_VolumeUnit_Litre() {
         IMeasurable unit = VolumeUnit.LITRE;
         assertEquals("LITRE",      unit.getUnitName());
         assertEquals("VolumeUnit", unit.getMeasurementType());
@@ -80,7 +71,7 @@ public class IMeasurableTest {
     // =========================================================================
 
     @Test
-    public void testIMeasurable_TemperatureUnit_Celsius_IsBaseUnit() {
+    void testIMeasurable_TemperatureUnit_Celsius_IsBaseUnit() {
         IMeasurable unit = TemperatureUnit.CELSIUS;
         assertEquals("CELSIUS",         unit.getUnitName());
         assertEquals("TemperatureUnit", unit.getMeasurementType());
@@ -94,25 +85,25 @@ public class IMeasurableTest {
     // =========================================================================
 
     @Test
-    public void testSupportsArithmetic_LengthUnit_IsSupported() {
+    void testSupportsArithmetic_LengthUnit_IsSupported() {
         assertTrue(LengthUnit.FEET   instanceof SupportsArithmetic);
         assertTrue(LengthUnit.INCHES instanceof SupportsArithmetic);
     }
 
     @Test
-    public void testSupportsArithmetic_WeightUnit_IsSupported() {
+    void testSupportsArithmetic_WeightUnit_IsSupported() {
         assertTrue(WeightUnit.KILOGRAM instanceof SupportsArithmetic);
         assertTrue(WeightUnit.GRAM     instanceof SupportsArithmetic);
     }
 
     @Test
-    public void testSupportsArithmetic_VolumeUnit_IsSupported() {
+    void testSupportsArithmetic_VolumeUnit_IsSupported() {
         assertTrue(VolumeUnit.LITRE      instanceof SupportsArithmetic);
         assertTrue(VolumeUnit.MILLILITRE instanceof SupportsArithmetic);
     }
 
     @Test
-    public void testSupportsArithmetic_TemperatureUnit_IsNotSupported() {
+    void testSupportsArithmetic_TemperatureUnit_IsNotSupported() {
     	assertFalse(TemperatureUnit.CELSIUS.supportsArithmetic());
     	assertFalse(TemperatureUnit.FAHRENHEIT.supportsArithmetic());
     	assertFalse(TemperatureUnit.KELVIN.supportsArithmetic());

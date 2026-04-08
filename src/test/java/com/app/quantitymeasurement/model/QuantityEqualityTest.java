@@ -10,14 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * QuantityEqualityTest
- *
- * Tests equality and hashCode contract for Quantity across all unit categories.
- * Covers: same-unit, cross-unit, cross-category, edge values,
- * null/NaN/Infinity guards, reflexive, symmetric, and transitive properties.
- */
-public class QuantityEqualityTest {
+
+class QuantityEqualityTest {
 
     private static final double EPSILON = 1e-6;
 
@@ -26,22 +20,22 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_Yards_SameValue() {
+    void testEquality_Yards_SameValue() {
         assertEquals(new Quantity<>(1.0, LengthUnit.YARDS), new Quantity<>(1.0, LengthUnit.YARDS));
     }
 
     @Test
-    public void testEquality_Yards_DifferentValue() {
+    void testEquality_Yards_DifferentValue() {
         assertNotEquals(new Quantity<>(1.0, LengthUnit.YARDS), new Quantity<>(2.0, LengthUnit.YARDS));
     }
 
     @Test
-    public void testEquality_Centimeters_SameValue() {
+    void testEquality_Centimeters_SameValue() {
         assertEquals(new Quantity<>(2.0, LengthUnit.CENTIMETERS), new Quantity<>(2.0, LengthUnit.CENTIMETERS));
     }
 
     @Test
-    public void testEquality_Centimeters_DifferentValue() {
+    void testEquality_Centimeters_DifferentValue() {
         assertNotEquals(new Quantity<>(2.0, LengthUnit.CENTIMETERS), new Quantity<>(3.0, LengthUnit.CENTIMETERS));
     }
 
@@ -50,43 +44,43 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_Yard_Equals_3Feet() {
+    void testEquality_Yard_Equals_3Feet() {
         assertEquals(new Quantity<>(1.0, LengthUnit.YARDS), new Quantity<>(3.0, LengthUnit.FEET));
     }
 
     @Test
-    public void testEquality_3Feet_Equals_Yard() {
+    void testEquality_3Feet_Equals_Yard() {
         assertEquals(new Quantity<>(3.0, LengthUnit.FEET), new Quantity<>(1.0, LengthUnit.YARDS));
     }
 
     @Test
-    public void testEquality_Yard_Equals_36Inches() {
+    void testEquality_Yard_Equals_36Inches() {
         assertEquals(new Quantity<>(1.0, LengthUnit.YARDS), new Quantity<>(36.0, LengthUnit.INCHES));
     }
 
     @Test
-    public void testEquality_36Inches_Equals_Yard() {
+    void testEquality_36Inches_Equals_Yard() {
         assertEquals(new Quantity<>(36.0, LengthUnit.INCHES), new Quantity<>(1.0, LengthUnit.YARDS));
     }
 
     @Test
-    public void testEquality_1Foot_Equals_12Inches() {
+    void testEquality_1Foot_Equals_12Inches() {
         assertEquals(new Quantity<>(1.0, LengthUnit.FEET), new Quantity<>(12.0, LengthUnit.INCHES));
     }
 
     @Test
-    public void testEquality_Centimeters_Equals_Inches() {
+    void testEquality_Centimeters_Equals_Inches() {
         assertEquals(new Quantity<>(2.54, LengthUnit.CENTIMETERS), new Quantity<>(1.0, LengthUnit.INCHES));
         assertEquals(new Quantity<>(1.0,  LengthUnit.CENTIMETERS), new Quantity<>(0.393701, LengthUnit.INCHES));
     }
 
     @Test
-    public void testEquality_Yard_NotEqual_2Feet() {
+    void testEquality_Yard_NotEqual_2Feet() {
         assertNotEquals(new Quantity<>(1.0, LengthUnit.YARDS), new Quantity<>(2.0, LengthUnit.FEET));
     }
 
     @Test
-    public void testEquality_Centimeters_NotEqual_Feet() {
+    void testEquality_Centimeters_NotEqual_Feet() {
         assertNotEquals(new Quantity<>(1.0, LengthUnit.CENTIMETERS), new Quantity<>(1.0, LengthUnit.FEET));
     }
 
@@ -95,13 +89,13 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_Reflexive() {
+    void testEquality_Reflexive() {
         Quantity<LengthUnit> yard = new Quantity<>(2.0, LengthUnit.YARDS);
         assertEquals(yard, yard);
     }
 
     @Test
-    public void testEquality_Symmetric() {
+    void testEquality_Symmetric() {
         Quantity<LengthUnit> a = new Quantity<>(1.0, LengthUnit.FEET);
         Quantity<LengthUnit> b = new Quantity<>(12.0, LengthUnit.INCHES);
         assertTrue(a.equals(b));
@@ -109,7 +103,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testEquality_Transitive() {
+    void testEquality_Transitive() {
         Quantity<LengthUnit> a = new Quantity<>(1.0, LengthUnit.YARDS);
         Quantity<LengthUnit> b = new Quantity<>(3.0, LengthUnit.FEET);
         Quantity<LengthUnit> c = new Quantity<>(36.0, LengthUnit.INCHES);
@@ -119,7 +113,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testEquality_Complex_AllUnits() {
+    void testEquality_Complex_AllUnits() {
         assertEquals(new Quantity<>(2.0, LengthUnit.YARDS), new Quantity<>(6.0, LengthUnit.FEET));
         assertEquals(new Quantity<>(6.0, LengthUnit.FEET),  new Quantity<>(72.0, LengthUnit.INCHES));
         assertEquals(new Quantity<>(2.0, LengthUnit.YARDS), new Quantity<>(72.0, LengthUnit.INCHES));
@@ -130,12 +124,12 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_NullComparison_ReturnsFalse() {
+    void testEquality_NullComparison_ReturnsFalse() {
         assertNotEquals(new Quantity<>(2.0, LengthUnit.YARDS), null);
     }
 
     @Test
-    public void testEquality_DifferentClass_ReturnsFalse() {
+    void testEquality_DifferentClass_ReturnsFalse() {
         Quantity<LengthUnit> yard = new Quantity<>(2.0, LengthUnit.YARDS);
         assertFalse(yard.equals("2.0"));
     }
@@ -145,17 +139,17 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_SmallDifference_InsideTolerance() {
+    void testEquality_SmallDifference_InsideTolerance() {
         assertEquals(new Quantity<>(1.00000008, LengthUnit.FEET), new Quantity<>(1.0, LengthUnit.FEET));
     }
 
     @Test
-    public void testEquality_SmallDifference_OutsideTolerance() {
+    void testEquality_SmallDifference_OutsideTolerance() {
         assertNotEquals(new Quantity<>(1.0000003, LengthUnit.FEET), new Quantity<>(1.0, LengthUnit.FEET));
     }
 
     @Test
-    public void testEquality_VerySmallValues_InsideEpsilon() {
+    void testEquality_VerySmallValues_InsideEpsilon() {
         assertEquals(
             new Quantity<>(1e-9,           LengthUnit.INCHES),
             new Quantity<>(1.0000005e-9,   LengthUnit.INCHES)
@@ -167,7 +161,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testEquality_VerySmallValues_OutsideEpsilon() {
+    void testEquality_VerySmallValues_OutsideEpsilon() {
         assertNotEquals(
             new Quantity<>(1e-9,           LengthUnit.INCHES),
             new Quantity<>(1e-9 + 2e-6,    LengthUnit.INCHES)
@@ -179,17 +173,17 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testConstructor_NullUnit_Throws() {
+    void testConstructor_NullUnit_Throws() {
         assertThrows(IllegalArgumentException.class, () -> new Quantity<>(1.0, (LengthUnit) null));
     }
 
     @Test
-    public void testConstructor_NaN_Throws() {
+    void testConstructor_NaN_Throws() {
         assertThrows(IllegalArgumentException.class, () -> new Quantity<>(Double.NaN, LengthUnit.FEET));
     }
 
     @Test
-    public void testConstructor_Infinity_Throws() {
+    void testConstructor_Infinity_Throws() {
         assertThrows(IllegalArgumentException.class,
             () -> new Quantity<>(Double.POSITIVE_INFINITY, LengthUnit.CENTIMETERS));
     }
@@ -199,43 +193,43 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_Kilogram_SameValue() {
+    void testEquality_Kilogram_SameValue() {
         assertEquals(new Quantity<>(1.0, WeightUnit.KILOGRAM), new Quantity<>(1.0, WeightUnit.KILOGRAM));
     }
 
     @Test
-    public void testEquality_Kilogram_DifferentValue() {
+    void testEquality_Kilogram_DifferentValue() {
         assertNotEquals(new Quantity<>(1.0, WeightUnit.KILOGRAM), new Quantity<>(2.0, WeightUnit.KILOGRAM));
     }
 
     @Test
-    public void testEquality_Gram_SameValue() {
+    void testEquality_Gram_SameValue() {
         assertEquals(new Quantity<>(500.0, WeightUnit.GRAM), new Quantity<>(500.0, WeightUnit.GRAM));
     }
 
     @Test
-    public void testEquality_Pound_SameValue() {
+    void testEquality_Pound_SameValue() {
         assertEquals(new Quantity<>(2.0, WeightUnit.POUND), new Quantity<>(2.0, WeightUnit.POUND));
     }
 
     @Test
-    public void testEquality_Kilogram_Equals_1000Gram() {
+    void testEquality_Kilogram_Equals_1000Gram() {
         assertEquals(new Quantity<>(1.0,    WeightUnit.KILOGRAM), new Quantity<>(1000.0, WeightUnit.GRAM));
         assertEquals(new Quantity<>(1000.0, WeightUnit.GRAM),     new Quantity<>(1.0,    WeightUnit.KILOGRAM));
     }
 
     @Test
-    public void testEquality_Kilogram_Equals_Pound() {
+    void testEquality_Kilogram_Equals_Pound() {
         assertEquals(new Quantity<>(1.0, WeightUnit.KILOGRAM), new Quantity<>(2.204624, WeightUnit.POUND));
     }
 
     @Test
-    public void testEquality_Gram_Equals_Pound() {
+    void testEquality_Gram_Equals_Pound() {
         assertEquals(new Quantity<>(453.592370, WeightUnit.GRAM), new Quantity<>(1.0, WeightUnit.POUND));
     }
 
     @Test
-    public void testEquality_Weight_Symmetric() {
+    void testEquality_Weight_Symmetric() {
         Quantity<WeightUnit> a = new Quantity<>(1.0, WeightUnit.KILOGRAM);
         Quantity<WeightUnit> b = new Quantity<>(1000.0, WeightUnit.GRAM);
         assertTrue(a.equals(b));
@@ -243,7 +237,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testEquality_Weight_Transitive() {
+    void testEquality_Weight_Transitive() {
         Quantity<WeightUnit> a = new Quantity<>(1.0,     WeightUnit.KILOGRAM);
         Quantity<WeightUnit> b = new Quantity<>(1000.0,  WeightUnit.GRAM);
         Quantity<WeightUnit> c = new Quantity<>(2.204624, WeightUnit.POUND);
@@ -253,38 +247,38 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testEquality_Weight_NullComparison() {
+    void testEquality_Weight_NullComparison() {
         assertFalse(new Quantity<>(1.0, WeightUnit.KILOGRAM).equals(null));
     }
 
     @Test
-    public void testEquality_Weight_Reflexive() {
+    void testEquality_Weight_Reflexive() {
         Quantity<WeightUnit> w = new Quantity<>(2.0, WeightUnit.KILOGRAM);
         assertEquals(w, w);
     }
 
     @Test
-    public void testEquality_Weight_ZeroValue() {
+    void testEquality_Weight_ZeroValue() {
         assertEquals(new Quantity<>(0.0, WeightUnit.KILOGRAM), new Quantity<>(0.0, WeightUnit.GRAM));
     }
 
     @Test
-    public void testEquality_Weight_NegativeValue() {
+    void testEquality_Weight_NegativeValue() {
         assertEquals(new Quantity<>(-1.0, WeightUnit.KILOGRAM), new Quantity<>(-1000.0, WeightUnit.GRAM));
     }
 
     @Test
-    public void testEquality_Weight_LargeValue() {
+    void testEquality_Weight_LargeValue() {
         assertEquals(new Quantity<>(1_000_000.0, WeightUnit.GRAM), new Quantity<>(1000.0, WeightUnit.KILOGRAM));
     }
 
     @Test
-    public void testEquality_Weight_SmallValue() {
+    void testEquality_Weight_SmallValue() {
         assertEquals(new Quantity<>(0.001, WeightUnit.KILOGRAM), new Quantity<>(1.0, WeightUnit.GRAM));
     }
 
     @Test
-    public void testConstructor_Weight_NullUnit_Throws() {
+    void testConstructor_Weight_NullUnit_Throws() {
         assertThrows(IllegalArgumentException.class, () -> new Quantity<>(1.0, (WeightUnit) null));
     }
 
@@ -293,27 +287,27 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testEquality_CrossCategory_LengthVsWeight() {
+    void testEquality_CrossCategory_LengthVsWeight() {
         assertFalse(new Quantity<>(1.0, LengthUnit.FEET).equals(new Quantity<>(1.0, WeightUnit.KILOGRAM)));
     }
 
     @Test
-    public void testEquality_CrossCategory_WeightVsLength() {
+    void testEquality_CrossCategory_WeightVsLength() {
         assertFalse(new Quantity<>(1.0, WeightUnit.KILOGRAM).equals(new Quantity<>(1.0, LengthUnit.FEET)));
     }
 
     @Test
-    public void testEquality_CrossCategory_TemperatureVsLength() {
+    void testEquality_CrossCategory_TemperatureVsLength() {
         assertFalse(new Quantity<>(100.0, TemperatureUnit.CELSIUS).equals(new Quantity<>(100.0, LengthUnit.FEET)));
     }
 
     @Test
-    public void testEquality_CrossCategory_VolumeVsLength() {
+    void testEquality_CrossCategory_VolumeVsLength() {
         assertFalse(new Quantity<>(1.0, VolumeUnit.LITRE).equals(new Quantity<>(1.0, LengthUnit.FEET)));
     }
 
     @Test
-    public void testEquality_CrossCategory_VolumeVsWeight() {
+    void testEquality_CrossCategory_VolumeVsWeight() {
         assertFalse(new Quantity<>(1.0, VolumeUnit.LITRE).equals(new Quantity<>(1.0, WeightUnit.KILOGRAM)));
     }
 
@@ -322,7 +316,7 @@ public class QuantityEqualityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void testHashCode_EqualLengthObjects_HaveSameHash() {
+    void testHashCode_EqualLengthObjects_HaveSameHash() {
         Quantity<LengthUnit> a = new Quantity<>(5.0,  LengthUnit.FEET);
         Quantity<LengthUnit> b = new Quantity<>(5.0,  LengthUnit.FEET);
         assertEquals(a.hashCode(), b.hashCode());
@@ -339,7 +333,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testHashCode_UnequalLengthObjects_HaveDifferentHash() {
+    void testHashCode_UnequalLengthObjects_HaveDifferentHash() {
         Quantity<LengthUnit> a = new Quantity<>(1.0000003, LengthUnit.FEET);
         Quantity<LengthUnit> b = new Quantity<>(1.0,       LengthUnit.FEET);
         assertNotEquals(a, b);
@@ -347,7 +341,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testHashCode_EqualVolumeObjects_HaveSameHash() {
+    void testHashCode_EqualVolumeObjects_HaveSameHash() {
         Quantity<VolumeUnit> a = new Quantity<>(1.0,    VolumeUnit.LITRE);
         Quantity<VolumeUnit> b = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
         assertEquals(a, b);
@@ -355,7 +349,7 @@ public class QuantityEqualityTest {
     }
 
     @Test
-    public void testHashCode_Consistency_LengthVsWeight() {
+    void testHashCode_Consistency_LengthVsWeight() {
         Quantity<LengthUnit> len = new Quantity<>(3.0, LengthUnit.FEET);
         Quantity<WeightUnit> wt  = new Quantity<>(3.0, WeightUnit.KILOGRAM);
         // They are not equal; no hashCode contract requirement, but must not throw

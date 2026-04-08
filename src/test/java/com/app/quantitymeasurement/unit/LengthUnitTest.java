@@ -4,17 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * LengthUnitTest
- *
- * Tests the LengthUnit enum's conversion factors, base unit conversions,
- * unit name, measurement type, arithmetic support, and enum identity.
- *
- * Base unit for length is INCHES.
- * Conversion factor for each unit equals convertToBaseUnit(1.0).
 
- */
-public class LengthUnitTest {
+class LengthUnitTest {
 
     private static final double EPSILON = 1e-6;
 
@@ -23,22 +14,22 @@ public class LengthUnitTest {
     // =========================================================================
 
     @Test
-    public void testConversionFactor_Feet() {
+    void testConversionFactor_Feet() {
         assertEquals(12.0, LengthUnit.FEET.convertToBaseUnit(1.0), EPSILON);
     }
 
     @Test
-    public void testConversionFactor_Inches() {
+    void testConversionFactor_Inches() {
         assertEquals(1.0, LengthUnit.INCHES.convertToBaseUnit(1.0), EPSILON);
     }
 
     @Test
-    public void testConversionFactor_Yards() {
+    void testConversionFactor_Yards() {
         assertEquals(36.0, LengthUnit.YARDS.convertToBaseUnit(1.0), EPSILON);
     }
 
     @Test
-    public void testConversionFactor_Centimeters() {
+    void testConversionFactor_Centimeters() {
         assertEquals(1.0 / 2.54, LengthUnit.CENTIMETERS.convertToBaseUnit(1.0), EPSILON);
     }
 
@@ -47,22 +38,22 @@ public class LengthUnitTest {
     // =========================================================================
 
     @Test
-    public void testConvertToBaseUnit_Feet() {
+    void testConvertToBaseUnit_Feet() {
         assertEquals(60.0, LengthUnit.FEET.convertToBaseUnit(5.0), EPSILON);
     }
 
     @Test
-    public void testConvertToBaseUnit_Inches() {
+    void testConvertToBaseUnit_Inches() {
         assertEquals(12.0, LengthUnit.INCHES.convertToBaseUnit(12.0), EPSILON);
     }
 
     @Test
-    public void testConvertToBaseUnit_Yards() {
+    void testConvertToBaseUnit_Yards() {
         assertEquals(36.0, LengthUnit.YARDS.convertToBaseUnit(1.0), EPSILON);
     }
 
     @Test
-    public void testConvertToBaseUnit_Centimeters() {
+    void testConvertToBaseUnit_Centimeters() {
         assertEquals(12.0, LengthUnit.CENTIMETERS.convertToBaseUnit(30.48), EPSILON);
     }
 
@@ -71,22 +62,22 @@ public class LengthUnitTest {
     // =========================================================================
 
     @Test
-    public void testConvertFromBaseUnit_ToFeet() {
+    void testConvertFromBaseUnit_ToFeet() {
         assertEquals(1.0, LengthUnit.FEET.convertFromBaseUnit(12.0), EPSILON);
     }
 
     @Test
-    public void testConvertFromBaseUnit_ToInches() {
+    void testConvertFromBaseUnit_ToInches() {
         assertEquals(12.0, LengthUnit.INCHES.convertFromBaseUnit(12.0), EPSILON);
     }
 
     @Test
-    public void testConvertFromBaseUnit_ToYards() {
+    void testConvertFromBaseUnit_ToYards() {
         assertEquals(1.0, LengthUnit.YARDS.convertFromBaseUnit(36.0), EPSILON);
     }
 
     @Test
-    public void testConvertFromBaseUnit_ToCentimeters() {
+    void testConvertFromBaseUnit_ToCentimeters() {
         assertEquals(30.48, LengthUnit.CENTIMETERS.convertFromBaseUnit(12.0), EPSILON);
     }
 
@@ -95,7 +86,7 @@ public class LengthUnitTest {
     // =========================================================================
 
     @Test
-    public void testGetUnitName() {
+    void testGetUnitName() {
         assertEquals("FEET",        LengthUnit.FEET.getUnitName());
         assertEquals("INCHES",      LengthUnit.INCHES.getUnitName());
         assertEquals("YARDS",       LengthUnit.YARDS.getUnitName());
@@ -103,7 +94,7 @@ public class LengthUnitTest {
     }
 
     @Test
-    public void testGetMeasurementType() {
+    void testGetMeasurementType() {
         assertEquals("LengthUnit", LengthUnit.FEET.getMeasurementType());
         assertEquals("LengthUnit", LengthUnit.INCHES.getMeasurementType());
         assertEquals("LengthUnit", LengthUnit.YARDS.getMeasurementType());
@@ -111,7 +102,7 @@ public class LengthUnitTest {
     }
 
     @Test
-    public void testEnumConstants_AllPresent() {
+    void testEnumConstants_AllPresent() {
         assertDoesNotThrow(() -> LengthUnit.valueOf("FEET"));
         assertDoesNotThrow(() -> LengthUnit.valueOf("INCHES"));
         assertDoesNotThrow(() -> LengthUnit.valueOf("YARDS"));
@@ -119,7 +110,7 @@ public class LengthUnitTest {
     }
 
     @Test
-    public void testEnumConstants_AreEnumInstances() {
+    void testEnumConstants_AreEnumInstances() {
         assertTrue(LengthUnit.FEET        instanceof Enum);
         assertTrue(LengthUnit.INCHES      instanceof Enum);
         assertTrue(LengthUnit.YARDS       instanceof Enum);
@@ -131,7 +122,7 @@ public class LengthUnitTest {
     // =========================================================================
 
     @Test
-    public void testSupportsArithmetic_AllLengthUnits() {
+    void testSupportsArithmetic_AllLengthUnits() {
         assertTrue(LengthUnit.FEET        instanceof SupportsArithmetic);
         assertTrue(LengthUnit.INCHES      instanceof SupportsArithmetic);
         assertTrue(LengthUnit.YARDS       instanceof SupportsArithmetic);

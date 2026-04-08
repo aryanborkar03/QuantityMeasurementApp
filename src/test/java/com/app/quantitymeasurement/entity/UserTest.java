@@ -8,21 +8,15 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * UserTest
- *
- * Unit tests for the {@link User} entity covering builder construction,
- * default field values, the {@link User#prePersist()} lifecycle callback,
- * and the custom {@link User#toString()} that excludes the password hash.
- */
-public class UserTest {
+
+class UserTest {
 
     // =========================================================================
     // Builder — LOCAL provider
     // =========================================================================
 
     @Test
-    public void testBuilder_LocalUser_SetsAllFields() {
+    void testBuilder_LocalUser_SetsAllFields() {
         User user = User.builder()
             .email("alice@example.com")
             .name("Alice")
@@ -41,7 +35,7 @@ public class UserTest {
     }
 
     @Test
-    public void testBuilder_DefaultRole_IsUser() {
+    void testBuilder_DefaultRole_IsUser() {
         User user = User.builder()
             .email("bob@example.com")
             .provider(AuthProvider.LOCAL)
@@ -55,7 +49,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testBuilder_GoogleUser_SetsProviderFields() {
+    void testBuilder_GoogleUser_SetsProviderFields() {
         User user = User.builder()
             .email("carol@gmail.com")
             .name("Carol")
@@ -77,7 +71,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testBuilder_GitHubUser_SetsAllFields() {
+    void testBuilder_GitHubUser_SetsAllFields() {
         /*
          * GitHub supplies a numeric user ID as the stable provider ID,
          * an avatar_url for the profile picture, and optionally a display name.
@@ -102,7 +96,7 @@ public class UserTest {
     }
 
     @Test
-    public void testBuilder_GitHubUser_NullName_FallsBackToLogin() {
+    void testBuilder_GitHubUser_NullName_FallsBackToLogin() {
         /*
          * GitHub's display name ('name') field is optional and may be null
          * when a user has not set one. CustomOAuth2UserService falls back to
@@ -126,7 +120,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testPrePersist_SetsCreatedAt() {
+    void testPrePersist_SetsCreatedAt() {
         User user = User.builder().email("d@example.com").provider(AuthProvider.LOCAL).build();
         assertNull(user.getCreatedAt(), "createdAt should be null before prePersist");
 
@@ -153,7 +147,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testToString_DoesNotExposePassword() {
+    void testToString_DoesNotExposePassword() {
         User user = User.builder()
             .email("f@example.com")
             .password("$2a$10$superSecretBcryptHash")
@@ -167,7 +161,7 @@ public class UserTest {
     }
 
     @Test
-    public void testToString_ContainsKeyFields() {
+    void testToString_ContainsKeyFields() {
         User user = User.builder()
             .email("g@example.com")
             .name("Greg")
@@ -186,7 +180,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testSetRole_ToAdmin_Persists() {
+    void testSetRole_ToAdmin_Persists() {
         User user = User.builder().email("h@example.com").provider(AuthProvider.LOCAL).build();
         assertEquals(Role.USER, user.getRole());
 
@@ -199,7 +193,7 @@ public class UserTest {
     // =========================================================================
 
     @Test
-    public void testNoArgsConstructor_AllFieldsNull() {
+    void testNoArgsConstructor_AllFieldsNull() {
         User user = new User();
         assertNull(user.getId());
         assertNull(user.getEmail());

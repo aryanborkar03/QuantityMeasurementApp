@@ -18,16 +18,10 @@ import com.app.quantitymeasurement.enums.AuthProvider;
 import com.app.quantitymeasurement.enums.Role;
 import com.app.quantitymeasurement.security.jwt.JwtTokenProvider;
 
-/**
- * JwtTokenProviderTest
- *
- * Tests for {@link JwtTokenProvider} — token generation, claim extraction,
- * and validation. Runs with the full Spring context so that {@code @Value}
- * properties are injected from {@code src/test/resources/application.properties}.
- */
+
 @SpringBootTest
 @ActiveProfiles("test")
-public class JwtTokenProviderTest {
+class JwtTokenProviderTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -36,7 +30,7 @@ public class JwtTokenProviderTest {
     private UserPrincipal userPrincipal;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         User user = User.builder()
             .id(1L)
             .email("alice@example.com")
@@ -56,14 +50,14 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testGenerateToken_ReturnsNonBlankString() {
+    void testGenerateToken_ReturnsNonBlankString() {
         String token = jwtTokenProvider.generateToken(authentication);
         assertNotNull(token);
         assertFalse(token.isBlank());
     }
 
     @Test
-    public void testGenerateToken_HasThreeParts() {
+    void testGenerateToken_HasThreeParts() {
         String token = jwtTokenProvider.generateToken(authentication);
         assertEquals(3, token.split("\\.").length,
             "JWT must have header.payload.signature format");
@@ -74,14 +68,14 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testGenerateTokenFromEmail_ReturnsValidToken() {
+    void testGenerateTokenFromEmail_ReturnsValidToken() {
         String token = jwtTokenProvider.generateTokenFromEmail("bob@example.com", "ROLE_USER");
         assertNotNull(token);
         assertTrue(jwtTokenProvider.validateToken(token));
     }
 
     @Test
-    public void testGenerateTokenFromEmail_SubjectIsEmail() {
+    void testGenerateTokenFromEmail_SubjectIsEmail() {
         String token = jwtTokenProvider.generateTokenFromEmail("carol@example.com", "ROLE_ADMIN");
         assertEquals("carol@example.com", jwtTokenProvider.getEmailFromToken(token));
     }
@@ -91,7 +85,7 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testGetEmailFromToken_ReturnsCorrectEmail() {
+    void testGetEmailFromToken_ReturnsCorrectEmail() {
         String token = jwtTokenProvider.generateToken(authentication);
         assertEquals("alice@example.com", jwtTokenProvider.getEmailFromToken(token));
     }
@@ -101,7 +95,7 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testGetRolesFromToken_ContainsRoleUser() {
+    void testGetRolesFromToken_ContainsRoleUser() {
         String token = jwtTokenProvider.generateToken(authentication);
         String roles = jwtTokenProvider.getRolesFromToken(token);
         assertNotNull(roles);
@@ -109,7 +103,7 @@ public class JwtTokenProviderTest {
     }
 
     @Test
-    public void testGetRolesFromToken_FromEmail_ContainsSuppliedRole() {
+    void testGetRolesFromToken_FromEmail_ContainsSuppliedRole() {
         String token = jwtTokenProvider.generateTokenFromEmail("d@example.com", "ROLE_ADMIN");
         assertEquals("ROLE_ADMIN", jwtTokenProvider.getRolesFromToken(token));
     }
@@ -119,13 +113,13 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testValidateToken_ValidToken_ReturnsTrue() {
+    void testValidateToken_ValidToken_ReturnsTrue() {
         String token = jwtTokenProvider.generateToken(authentication);
         assertTrue(jwtTokenProvider.validateToken(token));
     }
 
     @Test
-    public void testValidateToken_FromEmailVariant_ReturnsTrue() {
+    void testValidateToken_FromEmailVariant_ReturnsTrue() {
         String token = jwtTokenProvider.generateTokenFromEmail("e@example.com", "ROLE_USER");
         assertTrue(jwtTokenProvider.validateToken(token));
     }
@@ -135,24 +129,24 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testValidateToken_TamperedSignature_ReturnsFalse() {
+    void testValidateToken_TamperedSignature_ReturnsFalse() {
         String token = jwtTokenProvider.generateToken(authentication);
         String tampered = token.substring(0, token.lastIndexOf('.') + 1) + "tampered";
         assertFalse(jwtTokenProvider.validateToken(tampered));
     }
 
     @Test
-    public void testValidateToken_RandomString_ReturnsFalse() {
+    void testValidateToken_RandomString_ReturnsFalse() {
         assertFalse(jwtTokenProvider.validateToken("not.a.jwt"));
     }
 
     @Test
-    public void testValidateToken_EmptyString_ReturnsFalse() {
+    void testValidateToken_EmptyString_ReturnsFalse() {
         assertFalse(jwtTokenProvider.validateToken(""));
     }
 
     @Test
-    public void testValidateToken_NullThrowsOrReturnsFalse() {
+    void testValidateToken_NullThrowsOrReturnsFalse() {
         try {
             boolean result = jwtTokenProvider.validateToken(null);
             assertFalse(result);
@@ -162,7 +156,7 @@ public class JwtTokenProviderTest {
     }
 
     @Test
-    public void testValidateToken_TwoPartToken_ReturnsFalse() {
+    void testValidateToken_TwoPartToken_ReturnsFalse() {
         assertFalse(jwtTokenProvider.validateToken("header.payload"));
     }
 
@@ -171,7 +165,7 @@ public class JwtTokenProviderTest {
     // =========================================================================
 
     @Test
-    public void testTwoTokensForSameUser_BothValid() {
+    void testTwoTokensForSameUser_BothValid() {
         String t1 = jwtTokenProvider.generateToken(authentication);
         String t2 = jwtTokenProvider.generateToken(authentication);
         assertTrue(jwtTokenProvider.validateToken(t1));

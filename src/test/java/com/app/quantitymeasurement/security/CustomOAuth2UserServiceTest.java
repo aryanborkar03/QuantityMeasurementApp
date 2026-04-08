@@ -1,11 +1,19 @@
 package com.app.quantitymeasurement.security;
 
-import com.app.quantitymeasurement.entity.User;
-import com.app.quantitymeasurement.enums.AuthProvider;
-import com.app.quantitymeasurement.enums.Role;
-import com.app.quantitymeasurement.repository.UserRepository;
-import com.app.quantitymeasurement.security.UserPrincipal;
-import com.app.quantitymeasurement.security.oauth2.CustomOAuth2UserService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,35 +28,15 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.app.quantitymeasurement.entity.User;
+import com.app.quantitymeasurement.enums.AuthProvider;
+import com.app.quantitymeasurement.enums.Role;
+import com.app.quantitymeasurement.repository.UserRepository;
+import com.app.quantitymeasurement.security.oauth2.CustomOAuth2UserService;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-/**
- * CustomOAuth2UserServiceTest
- *
- * Unit tests for {@link CustomOAuth2UserService} covering both the Google and
- * GitHub OAuth2 provider paths.
- *
- * Testing strategy:{@code CustomOAuth2UserService} extends
- * {@link org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService},
- * whose {@code loadUser()} makes an HTTP call to the provider's UserInfo endpoint.
- * That HTTP call cannot run in a unit test without a live server. Instead, each test
- * constructs a {@link TestableOAuth2UserService} that overrides {@code loadUser()} to
- * return a synthetic {@link OAuth2User} built from a hard-coded attribute map, then
- * delegates to {@code super.loadUser()} only in name — the overriding method calls
- * the internal {@code processOAuth2User()} directly via the protected helper exposed
- * by {@link TestableOAuth2UserService}. The {@link UserRepository} is mocked so no
- * database is required.
- */
 @ExtendWith(MockitoExtension.class)
-public class CustomOAuth2UserServiceTest {
+class CustomOAuth2UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -65,7 +53,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGoogle_NewUser_CreatesAndReturnsUserPrincipal() {
+    void testGoogle_NewUser_CreatesAndReturnsUserPrincipal() {
         Map<String, Object> attrs = googleAttrs("alice@gmail.com", "Alice",
                 "https://pic.google.com/alice.jpg", "google-sub-111");
 
@@ -89,7 +77,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGoogle_ReturningUser_UpdatesNameAndImage() {
+    void testGoogle_ReturningUser_UpdatesNameAndImage() {
         Map<String, Object> attrs = googleAttrs("bob@gmail.com", "Bob Updated",
                 "https://pic.google.com/bob-new.jpg", "google-sub-222");
 
@@ -115,7 +103,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGoogle_EmailAlreadyLocal_ThrowsConflict() {
+    void testGoogle_EmailAlreadyLocal_ThrowsConflict() {
         Map<String, Object> attrs = googleAttrs("carol@example.com", "Carol",
                 null, "google-sub-333");
 
@@ -125,10 +113,12 @@ public class CustomOAuth2UserServiceTest {
 
         when(userRepository.findByEmail("carol@example.com")).thenReturn(Optional.of(local));
 
-        OAuth2AuthenticationException ex = assertThrows(
-            OAuth2AuthenticationException.class,
-            () -> service.process(userRequest("google"), oAuth2User(attrs, "sub"))
-        );
+        OAuth2UserRequest request = userRequest("google");
+        OAuth2User user = oAuth2User(attrs, "sub");
+
+        OAuth2AuthenticationException ex =
+                assertThrows(OAuth2AuthenticationException.class,
+                        () -> service.process(request, user));
         assertTrue(ex.getMessage().contains("email and password"),
             "Should tell the user to log in with their local password");
     }
@@ -138,7 +128,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_NewUser_CreatesAndReturnsUserPrincipal() {
+    void testGitHub_NewUser_CreatesAndReturnsUserPrincipal() {
         Map<String, Object> attrs = githubAttrs(99999, "dave-gh", "Dave",
                 "dave@github.com", "https://avatars.githubusercontent.com/u/99999?v=4");
 
@@ -162,7 +152,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_NullDisplayName_FallsBackToLogin() {
+    void testGitHub_NullDisplayName_FallsBackToLogin() {
         Map<String, Object> attrs = githubAttrs(77777, "eve-login", null,
                 "eve@github.com", "https://avatars.githubusercontent.com/u/77777?v=4");
 
@@ -184,7 +174,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_NullEmail_ThrowsDescriptiveError() {
+    void testGitHub_NullEmail_ThrowsDescriptiveError() {
         /*
          * GitHub only returns the email when it is not marked as private.
          * The service must reject this case with a clear error rather than
@@ -193,10 +183,12 @@ public class CustomOAuth2UserServiceTest {
         Map<String, Object> attrs = githubAttrs(55555, "frank-private", "Frank",
                 null, "https://avatars.githubusercontent.com/u/55555?v=4");
 
-        OAuth2AuthenticationException ex = assertThrows(
-            OAuth2AuthenticationException.class,
-            () -> service.process(userRequest("github"), oAuth2User(attrs, "id"))
-        );
+        OAuth2UserRequest request = userRequest("github");
+        OAuth2User user = oAuth2User(attrs, "id");
+
+        OAuth2AuthenticationException ex =
+                assertThrows(OAuth2AuthenticationException.class,
+                        () -> service.process(request, user));
         String msg = ex.getMessage().toLowerCase();
         assertTrue(msg.contains("email") || msg.contains("github"),
             "Error must reference email or github so the user knows how to resolve it");
@@ -207,7 +199,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_EmailAlreadyGoogle_ThrowsConflictMentioningGoogle() {
+    void testGitHub_EmailAlreadyGoogle_ThrowsConflictMentioningGoogle() {
         Map<String, Object> attrs = githubAttrs(33333, "grace-gh", "Grace",
                 "grace@example.com", null);
 
@@ -218,10 +210,12 @@ public class CustomOAuth2UserServiceTest {
         when(userRepository.findByEmail("grace@example.com"))
             .thenReturn(Optional.of(googleExisting));
 
-        OAuth2AuthenticationException ex = assertThrows(
-            OAuth2AuthenticationException.class,
-            () -> service.process(userRequest("github"), oAuth2User(attrs, "id"))
-        );
+        OAuth2UserRequest request = userRequest("github");
+        OAuth2User user = oAuth2User(attrs, "id");
+
+        OAuth2AuthenticationException ex =
+                assertThrows(OAuth2AuthenticationException.class,
+                        () -> service.process(request, user));
         assertTrue(ex.getMessage().toLowerCase().contains("google"),
             "Error must tell the user they registered with Google, not GitHub");
     }
@@ -231,7 +225,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_EmailAlreadyLocal_ThrowsConflict() {
+    void testGitHub_EmailAlreadyLocal_ThrowsConflict() {
         Map<String, Object> attrs = githubAttrs(22222, "henry-gh", "Henry",
                 "henry@example.com", null);
 
@@ -242,10 +236,12 @@ public class CustomOAuth2UserServiceTest {
         when(userRepository.findByEmail("henry@example.com"))
             .thenReturn(Optional.of(localExisting));
 
-        OAuth2AuthenticationException ex = assertThrows(
-            OAuth2AuthenticationException.class,
-            () -> service.process(userRequest("github"), oAuth2User(attrs, "id"))
-        );
+        OAuth2UserRequest request = userRequest("github");
+        OAuth2User user = oAuth2User(attrs, "id");
+
+        OAuth2AuthenticationException ex =
+                assertThrows(OAuth2AuthenticationException.class,
+                        () -> service.process(request, user));
         assertTrue(ex.getMessage().contains("email and password"));
     }
 
@@ -254,7 +250,7 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testGitHub_ReturningUser_UpdatesNameAndAvatar() {
+    void testGitHub_ReturningUser_UpdatesNameAndAvatar() {
         Map<String, Object> attrs = githubAttrs(11111, "hank-gh", "Hank Updated",
                 "hank@github.com",
                 "https://avatars.githubusercontent.com/u/11111-new?v=4");
@@ -281,15 +277,18 @@ public class CustomOAuth2UserServiceTest {
     // =========================================================================
 
     @Test
-    public void testUnsupportedProvider_ThrowsDescriptiveError() {
+    void testUnsupportedProvider_ThrowsDescriptiveError() {
         Map<String, Object> attrs = new HashMap<>();
         attrs.put("email", "test@example.com");
         attrs.put("id",    "any-id");
 
-        OAuth2AuthenticationException ex = assertThrows(
-            OAuth2AuthenticationException.class,
-            () -> service.process(userRequest("facebook"), oAuth2User(attrs, "id"))
-        );
+        OAuth2UserRequest request = userRequest("facebook");
+        OAuth2User user = oAuth2User(attrs, "id");
+
+        OAuth2AuthenticationException ex =
+                assertThrows(OAuth2AuthenticationException.class,
+                        () -> service.process(request, user));
+        
         String msg = ex.getMessage().toLowerCase();
         assertTrue(msg.contains("unsupported") || msg.contains("facebook"),
             "Error must identify the unsupported provider");
@@ -308,6 +307,7 @@ public class CustomOAuth2UserServiceTest {
     static class TestableOAuth2UserService extends CustomOAuth2UserService {
 
         TestableOAuth2UserService(UserRepository repo) {
+        	super(repo);
             try {
                 java.lang.reflect.Field f =
                     CustomOAuth2UserService.class.getDeclaredField("userRepository");
