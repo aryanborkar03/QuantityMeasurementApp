@@ -15,12 +15,13 @@ services:
       - source: 0.0.0.0/0
         description: everywhere
 
-  - type: pserv
+  - type: web
     runtime: docker
     name: qma-auth-service
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
+    healthCheckPath: /actuator/health
     envVars:
       - fromGroup: qma-shared
       - key: MODULE
@@ -68,12 +69,13 @@ services:
       - key: OAUTH2_REDIRECT_URI
         sync: false
 
-  - type: pserv
+  - type: web
     runtime: docker
     name: qma-service
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
+    healthCheckPath: /actuator/health
     envVars:
       - key: MODULE
         value: qma-service
@@ -112,6 +114,6 @@ services:
       - key: ADMIN_CLIENT_ENABLED
         value: false
       - key: AUTH_SERVICE_URI
-        value: http://qma-auth-service:8081
+        value: https://qma-auth-service.onrender.com
       - key: QMA_SERVICE_URI
-        value: http://qma-service:8082
+        value: https://qma-service.onrender.com

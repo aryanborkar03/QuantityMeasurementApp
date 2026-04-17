@@ -1,10 +1,10 @@
 # Render Deployment
 
-This repo is a Spring Boot multi-module backend. For Render, deploy the public API gateway and keep the backend services private:
+This repo is a Spring Boot multi-module backend. For Render's free tier, deploy each Spring Boot process as a public web service:
 
 - `qma-api-gateway`: public web service
-- `qma-auth-service`: private service
-- `qma-service`: private service
+- `qma-auth-service`: public web service
+- `qma-service`: public web service
 - `qma-redis`: Render Key Value instance
 
 The `render.yaml` blueprint builds each Java module from the shared `Dockerfile` by setting the `MODULE` environment variable. Render also passes environment variables as Docker build args, so `MODULE=api-gateway`, `MODULE=auth-service`, and `MODULE=qma-service` select the correct jar at build time.
@@ -36,6 +36,7 @@ Keep the MySQL credentials ready:
 4. Render will detect `render.yaml`.
 5. Fill the prompted secret values.
 6. Deploy.
+7. After deploy, confirm the service URLs. If Render gives either internal service a different URL than `https://qma-auth-service.onrender.com` or `https://qma-service.onrender.com`, update `AUTH_SERVICE_URI` and `QMA_SERVICE_URI` on `qma-api-gateway`.
 
 ## Values Render Will Ask For
 
@@ -69,7 +70,8 @@ Then make sure the same URLs are set in Render as `GOOGLE_REDIRECT_URI` and `GIT
 
 ## Notes
 
-- `api-gateway` is public. Call the backend through this service.
-- `auth-service` and `qma-service` are private and are reached only by the gateway.
+- `api-gateway` is the main public API. Your frontend should call this service.
+- `auth-service` and `qma-service` are also public on the free setup because Render private services require a paid plan.
+- Free Render services can sleep when idle, so the first request after inactivity can be slow.
 - Eureka and Spring Boot Admin remain usable locally with `docker-compose.yml`, but are disabled on Render to reduce service count and deployment complexity.
 - `qma-service` currently uses in-memory H2 for its history repository, so quantity history will reset on service restart. Auth data is persistent through MySQL.
