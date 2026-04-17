@@ -1,0 +1,154 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: qma-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-qma_auth}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-change-me}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    container_name: qma-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+
+  eureka-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: eureka-server
+    container_name: qma-eureka-server
+    restart: unless-stopped
+    environment:
+      EUREKA_USERNAME: ${EUREKA_USERNAME}
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
+      EUREKA_PORT: ${EUREKA_PORT:-8761}
+      EUREKA_HOST: eureka-server
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+    ports:
+      - "${EUREKA_PORT:-8761}:8761"
+
+  admin-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: admin-server
+    container_name: qma-admin-server
+    restart: unless-stopped
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_PORT: ${ADMIN_PORT:-8090}
+      EUREKA_USERNAME: ${EUREKA_USERNAME}
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
+      EUREKA_PORT: ${EUREKA_PORT:-8761}
+      EUREKA_HOST: eureka-server
+    ports:
+      - "${ADMIN_PORT:-8090}:8090"
+    depends_on:
+      - eureka-server
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: auth-service
+    container_name: qma-auth-service
+    restart: unless-stopped
+    environment:
+      DB_PROFILE: ${AUTH_DB_PROFILE:-prod}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-qma_auth}
+      MYSQL_USERNAME: ${MYSQL_USERNAME:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DDL_AUTO: ${MYSQL_DDL_AUTO:-update}
+      MYSQL_USE_SSL: ${MYSQL_USE_SSL:-false}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:8080/login/oauth2/code/google}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      GITHUB_REDIRECT_URI: ${GITHUB_REDIRECT_URI:-http://localhost:8080/login/oauth2/code/github}
+      OAUTH2_REDIRECT_URI: ${OAUTH2_REDIRECT_URI:-http://localhost:5173}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      EUREKA_USERNAME: ${EUREKA_USERNAME}
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
+      EUREKA_PORT: ${EUREKA_PORT:-8761}
+      EUREKA_HOST: eureka-server
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_PORT: ${ADMIN_PORT:-8090}
+      ADMIN_HOST: admin-server
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+      - eureka-server
+      - admin-server
+
+  qma-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: qma-service
+    container_name: qma-service
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      EUREKA_USERNAME: ${EUREKA_USERNAME}
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
+      EUREKA_PORT: ${EUREKA_PORT:-8761}
+      EUREKA_HOST: eureka-server
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_PORT: ${ADMIN_PORT:-8090}
+      ADMIN_HOST: admin-server
+    ports:
+      - "8082:8082"
+    depends_on:
+      - redis
+      - eureka-server
+      - admin-server
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE: api-gateway
+    container_name: qma-api-gateway
+    restart: unless-stopped
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+      EUREKA_USERNAME: ${EUREKA_USERNAME}
+      EUREKA_PASSWORD: ${EUREKA_PASSWORD}
+      EUREKA_PORT: ${EUREKA_PORT:-8761}
+      EUREKA_HOST: eureka-server
+      ADMIN_PORT: ${ADMIN_PORT:-8090}
+      ADMIN_HOST: admin-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - auth-service
+      - qma-service
+
+volumes:
+  mysql-data:

@@ -1,0 +1,117 @@
+envVarGroups:
+  - name: qma-shared
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+services:
+  - type: keyvalue
+    name: qma-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: everywhere
+
+  - type: pserv
+    runtime: docker
+    name: qma-auth-service
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - fromGroup: qma-shared
+      - key: MODULE
+        value: auth-service
+      - key: PORT
+        value: 8081
+      - key: EUREKA_CLIENT_ENABLED
+        value: false
+      - key: ADMIN_CLIENT_ENABLED
+        value: false
+      - key: DB_PROFILE
+        value: prod
+      - key: MYSQL_HOST
+        sync: false
+      - key: MYSQL_PORT
+        value: 3306
+      - key: MYSQL_DATABASE
+        sync: false
+      - key: MYSQL_USERNAME
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: MYSQL_DDL_AUTO
+        value: update
+      - key: MYSQL_USE_SSL
+        value: true
+      - key: JWT_EXPIRATION_MS
+        value: 86400000
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_REDIRECT_URI
+        sync: false
+      - key: OAUTH2_REDIRECT_URI
+        sync: false
+
+  - type: pserv
+    runtime: docker
+    name: qma-service
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      - key: MODULE
+        value: qma-service
+      - key: PORT
+        value: 8082
+      - key: EUREKA_CLIENT_ENABLED
+        value: false
+      - key: ADMIN_CLIENT_ENABLED
+        value: false
+      - key: REDIS_HOST
+        fromService:
+          type: keyvalue
+          name: qma-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: keyvalue
+          name: qma-redis
+          property: port
+
+  - type: web
+    runtime: docker
+    name: qma-api-gateway
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    envVars:
+      - fromGroup: qma-shared
+      - key: MODULE
+        value: api-gateway
+      - key: PORT
+        value: 10000
+      - key: EUREKA_CLIENT_ENABLED
+        value: false
+      - key: ADMIN_CLIENT_ENABLED
+        value: false
+      - key: AUTH_SERVICE_URI
+        value: http://qma-auth-service:8081
+      - key: QMA_SERVICE_URI
+        value: http://qma-service:8082

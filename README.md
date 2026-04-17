@@ -90,6 +90,55 @@
     mvn test
     ```
 
+### Docker Deployment
+
+This repo includes a reusable `Dockerfile` plus `docker-compose.yml` for the Spring microservices and their local infrastructure.
+
+1. Create a deployment env file:
+
+    ```
+    cp .env.example .env
+    ```
+
+2. Fill in real secrets and OAuth values in `.env`.
+
+    For production OAuth, set:
+
+    ```
+    GOOGLE_REDIRECT_URI=https://your-api-domain/login/oauth2/code/google
+    GITHUB_REDIRECT_URI=https://your-api-domain/login/oauth2/code/github
+    OAUTH2_REDIRECT_URI=https://your-frontend-domain
+    CORS_ALLOWED_ORIGINS=https://your-frontend-domain
+    ```
+
+3. Build and run everything:
+
+    ```
+    docker compose up --build -d
+    ```
+
+4. Useful URLs when running locally:
+
+    ```
+    API Gateway: http://localhost:8080
+    Auth Service: http://localhost:8081
+    QMA Service: http://localhost:8082
+    Eureka Dashboard: http://localhost:8761
+    Spring Boot Admin: http://localhost:8090
+    ```
+
+5. Stop the stack:
+
+    ```
+    docker compose down
+    ```
+
+    To remove the MySQL volume too:
+
+    ```
+    docker compose down -v
+    ```
+
 ### 📂 Project Structure
 
 ```
