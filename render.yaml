@@ -19,7 +19,8 @@ services:
     runtime: docker
     name: qma-auth-service
     plan: free
-    dockerfilePath: ./auth-service/Dockerfile
+    rootDir: auth-service
+    dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:
@@ -71,7 +72,8 @@ services:
     runtime: docker
     name: qma-service
     plan: free
-    dockerfilePath: ./qma-service/Dockerfile
+    rootDir: qma-service
+    dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:
@@ -96,7 +98,8 @@ services:
     runtime: docker
     name: qma-api-gateway
     plan: free
-    dockerfilePath: ./api-gateway/Dockerfile
+    rootDir: api-gateway
+    dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:

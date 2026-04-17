@@ -15,7 +15,7 @@ Each service has its own Dockerfile:
 - `eureka-server/Dockerfile`
 - `admin-server/Dockerfile`
 
-Use the repo root as the Docker build context (`.`), because each Dockerfile builds from the parent multi-module Maven project.
+Each Dockerfile builds its own service directory directly.
 
 ## Before Deploying
 
@@ -42,17 +42,20 @@ If you do not want to use Blueprint, create three Render Web Services manually f
 
 1. Create `qma-auth-service`
    - Runtime: Docker
-   - Dockerfile Path: `./auth-service/Dockerfile`
+   - Root Directory: `auth-service`
+   - Dockerfile Path: `./Dockerfile`
    - Docker Context: `.`
    - Instance Type: Free
 2. Create `qma-service`
    - Runtime: Docker
-   - Dockerfile Path: `./qma-service/Dockerfile`
+   - Root Directory: `qma-service`
+   - Dockerfile Path: `./Dockerfile`
    - Docker Context: `.`
    - Instance Type: Free
 3. Create `qma-api-gateway`
    - Runtime: Docker
-   - Dockerfile Path: `./api-gateway/Dockerfile`
+   - Root Directory: `api-gateway`
+   - Dockerfile Path: `./Dockerfile`
    - Docker Context: `.`
    - Instance Type: Free
 

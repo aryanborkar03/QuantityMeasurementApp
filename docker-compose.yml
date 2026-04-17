@@ -20,8 +20,8 @@ services:
 
   eureka-server:
     build:
-      context: .
-      dockerfile: eureka-server/Dockerfile
+      context: ./eureka-server
+      dockerfile: Dockerfile
     container_name: qma-eureka-server
     restart: unless-stopped
     environment:
@@ -35,8 +35,8 @@ services:
 
   admin-server:
     build:
-      context: .
-      dockerfile: admin-server/Dockerfile
+      context: ./admin-server
+      dockerfile: Dockerfile
     container_name: qma-admin-server
     restart: unless-stopped
     environment:
@@ -54,8 +54,8 @@ services:
 
   auth-service:
     build:
-      context: .
-      dockerfile: auth-service/Dockerfile
+      context: ./auth-service
+      dockerfile: Dockerfile
     container_name: qma-auth-service
     restart: unless-stopped
     environment:
@@ -96,8 +96,8 @@ services:
 
   qma-service:
     build:
-      context: .
-      dockerfile: qma-service/Dockerfile
+      context: ./qma-service
+      dockerfile: Dockerfile
     container_name: qma-service
     restart: unless-stopped
     environment:
@@ -120,8 +120,8 @@ services:
 
   api-gateway:
     build:
-      context: .
-      dockerfile: api-gateway/Dockerfile
+      context: ./api-gateway
+      dockerfile: Dockerfile
     container_name: qma-api-gateway
     restart: unless-stopped
     environment:
