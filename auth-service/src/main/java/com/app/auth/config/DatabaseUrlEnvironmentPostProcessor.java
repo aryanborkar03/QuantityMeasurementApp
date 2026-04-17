@@ -28,14 +28,16 @@ public class DatabaseUrlEnvironmentPostProcessor implements EnvironmentPostProce
         Map<String, Object> properties = new LinkedHashMap<>();
 
         String jdbcUrl = firstText(environment, "MYSQL_JDBC_URL");
-        if (StringUtils.hasText(jdbcUrl)) {
+        if (StringUtils.hasText(jdbcUrl) && jdbcUrl.startsWith("jdbc:mysql://")) {
             properties.put("spring.datasource.url", jdbcUrl);
         } else {
             ParsedMysqlUrl parsed = findParsedMysqlUrl(environment);
             if (parsed != null) {
                 properties.put("spring.datasource.url", parsed.toJdbcUrl(environment));
-                putIfMissing(environment, properties, "spring.datasource.username", "MYSQL_USERNAME", parsed.username());
-                putIfMissing(environment, properties, "spring.datasource.password", "MYSQL_PASSWORD", parsed.password());
+                putIfMissing(environment, properties, "spring.datasource.username", parsed.username(),
+                        "MYSQL_USERNAME", "MYSQLUSER", "MYSQL_USER");
+                putIfMissing(environment, properties, "spring.datasource.password", parsed.password(),
+                        "MYSQL_PASSWORD", "MYSQLPASSWORD", "MYSQL_ROOT_PASSWORD");
             }
         }
 
@@ -58,14 +60,23 @@ public class DatabaseUrlEnvironmentPostProcessor implements EnvironmentPostProce
             ConfigurableEnvironment environment,
             Map<String, Object> properties,
             String propertyKey,
-            String envKey,
-            String parsedValue) {
+            String parsedValue,
+            String... envKeys) {
 
         if (!StringUtils.hasText(environment.getProperty(propertyKey))
-                && !StringUtils.hasText(environment.getProperty(envKey))
+                && !hasAnyText(environment, envKeys)
                 && StringUtils.hasText(parsedValue)) {
             properties.put(propertyKey, parsedValue);
         }
+    }
+
+    private boolean hasAnyText(ConfigurableEnvironment environment, String... keys) {
+        for (String key : keys) {
+            if (StringUtils.hasText(environment.getProperty(key))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String firstText(ConfigurableEnvironment environment, String key) {
@@ -117,7 +128,9 @@ public class DatabaseUrlEnvironmentPostProcessor implements EnvironmentPostProce
             return "jdbc:mysql://" + host + ":" + port + "/" + database
                     + "?useSSL=" + useSsl
                     + "&serverTimezone=UTC"
-                    + "&allowPublicKeyRetrieval=true";
+                    + "&allowPublicKeyRetrieval=true"
+                    + "&connectTimeout=10000"
+                    + "&socketTimeout=10000";
         }
 
         private static String decode(String value) {
