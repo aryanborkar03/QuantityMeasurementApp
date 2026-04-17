@@ -36,6 +36,24 @@ Keep the MySQL credentials ready:
 - `MYSQL_USERNAME`
 - `MYSQL_PASSWORD`
 
+Use a database user that is allowed to connect from Render. Do not use a local-only
+`root` account for production; many MySQL providers reject `root` from remote hosts,
+which shows up as `Access denied for user 'root'@'<render-ip>'`.
+
+For a self-managed MySQL server, create a dedicated user and grant access from
+remote hosts:
+
+```sql
+CREATE DATABASE IF NOT EXISTS qma_auth;
+CREATE USER 'qma_user'@'%' IDENTIFIED BY 'replace-with-a-strong-password';
+GRANT ALL PRIVILEGES ON qma_auth.* TO 'qma_user'@'%';
+FLUSH PRIVILEGES;
+```
+
+Then set Render's `MYSQL_USERNAME` to `qma_user` and `MYSQL_PASSWORD` to that
+password. If your MySQL provider gives you a generated username and password,
+use those instead.
+
 ## Manual Web Service Deploy Steps
 
 If you do not want to use Blueprint, create three Render Web Services manually from the same GitHub repo:
