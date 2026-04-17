@@ -19,13 +19,11 @@ services:
     runtime: docker
     name: qma-auth-service
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./auth-service/Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:
       - fromGroup: qma-shared
-      - key: MODULE
-        value: auth-service
       - key: PORT
         value: 8081
       - key: EUREKA_CLIENT_ENABLED
@@ -73,12 +71,10 @@ services:
     runtime: docker
     name: qma-service
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./qma-service/Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:
-      - key: MODULE
-        value: qma-service
       - key: PORT
         value: 8082
       - key: EUREKA_CLIENT_ENABLED
@@ -100,13 +96,11 @@ services:
     runtime: docker
     name: qma-api-gateway
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./api-gateway/Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
     envVars:
       - fromGroup: qma-shared
-      - key: MODULE
-        value: api-gateway
       - key: PORT
         value: 10000
       - key: EUREKA_CLIENT_ENABLED

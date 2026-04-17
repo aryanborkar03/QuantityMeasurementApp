@@ -7,7 +7,15 @@ This repo is a Spring Boot multi-module backend. For Render's free tier, deploy 
 - `qma-service`: public web service
 - `qma-redis`: Render Key Value instance
 
-The `render.yaml` blueprint builds each Java module from the shared `Dockerfile` by setting the `MODULE` environment variable. Render also passes environment variables as Docker build args, so `MODULE=api-gateway`, `MODULE=auth-service`, and `MODULE=qma-service` select the correct jar at build time.
+Each service has its own Dockerfile:
+
+- `api-gateway/Dockerfile`
+- `auth-service/Dockerfile`
+- `qma-service/Dockerfile`
+- `eureka-server/Dockerfile`
+- `admin-server/Dockerfile`
+
+Use the repo root as the Docker build context (`.`), because each Dockerfile builds from the parent multi-module Maven project.
 
 ## Before Deploying
 
@@ -28,7 +36,29 @@ Keep the MySQL credentials ready:
 - `MYSQL_USERNAME`
 - `MYSQL_PASSWORD`
 
-## Deploy Steps
+## Manual Web Service Deploy Steps
+
+If you do not want to use Blueprint, create three Render Web Services manually from the same GitHub repo:
+
+1. Create `qma-auth-service`
+   - Runtime: Docker
+   - Dockerfile Path: `./auth-service/Dockerfile`
+   - Docker Context: `.`
+   - Instance Type: Free
+2. Create `qma-service`
+   - Runtime: Docker
+   - Dockerfile Path: `./qma-service/Dockerfile`
+   - Docker Context: `.`
+   - Instance Type: Free
+3. Create `qma-api-gateway`
+   - Runtime: Docker
+   - Dockerfile Path: `./api-gateway/Dockerfile`
+   - Docker Context: `.`
+   - Instance Type: Free
+
+You no longer need to set a `MODULE` environment variable.
+
+## Blueprint Deploy Steps
 
 1. Push this repo to GitHub.
 2. In Render, choose **New > Blueprint**.
