@@ -2,7 +2,7 @@ FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /workspace
 COPY . .
-RUN mvn clean package -DskipTests -pl api-gateway -am
+RUN mvn clean package -DskipTests -pl api-gateway -am -Dspring-boot.repackage.skip=false
 
 FROM eclipse-temurin:17-jre
 
