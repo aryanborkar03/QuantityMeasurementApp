@@ -9,7 +9,7 @@ FROM eclipse-temurin:17-jre
 ENV JAVA_OPTS=""
 WORKDIR /app
 
-COPY --from=build /workspace/eureka-server/target/*.jar /app/app.jar
+COPY --from=build /workspace/eureka-server/target/eureka-server-0.0.1-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 8761
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]

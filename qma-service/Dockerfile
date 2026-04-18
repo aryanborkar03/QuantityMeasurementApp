@@ -9,7 +9,7 @@ FROM eclipse-temurin:17-jre
 ENV JAVA_OPTS=""
 WORKDIR /app
 
-COPY --from=build /workspace/qma-service/target/*.jar /app/app.jar
+COPY --from=build /workspace/qma-service/target/qma-service-0.0.1-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 8082
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
